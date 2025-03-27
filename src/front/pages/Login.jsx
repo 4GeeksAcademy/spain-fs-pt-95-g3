@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 
 export const Login = () => {
-	const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,6 +12,8 @@ export const Login = () => {
     password: "",
     sex: "",
   });
+  const [weight, setWeight] = useState("");
+  const [unit, setUnit] = useState("kg");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,6 +23,25 @@ export const Login = () => {
     setFormData({ ...formData, sex });
     nextStep();
   };
+
+  const handleWeightChange = (e) => {
+    let value = e.target.value.replace(/[^0-9.]/g, ""); // Permitir solo números y punto
+    setWeight(value);
+  };
+
+  const handleUnitChange = (e) => {
+    let newUnit = e.target.value;
+    let newWeight = weight;
+
+    if (newUnit === "lb" && unit === "kg") {
+      newWeight = (weight * 2.20462).toFixed(2); // Kg a libras
+    } else if (newUnit === "kg" && unit === "lb") {
+      newWeight = (weight / 2.20462).toFixed(2); // Libras a kg
+    }
+  
+    setUnit(newUnit);
+    setWeight(newWeight);
+  };  
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
@@ -39,26 +60,26 @@ export const Login = () => {
             onChange={handleChange}
             className="w-50 p-2 mt-3 border rounded"
           />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-50 p-2 mt-3 border rounded"
-        />
-        <button onClick={nextStep} className="mt-4 p-2 btn btn-info text-white">
-          Iniciar sesión
-        </button>
-        <p className="mt-2 btn text-warning" onClick={() => setStep(99)}>¿Has olvidado tu contraseña?</p>
-        <p>¿No tienes una cuenta con nosotros?<span onClick={nextStep} className="btn text-warning">¡Crear una ahora!</span></p>
-	  </div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Contraseña"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-50 p-2 mt-3 border rounded"
+          />
+          <button onClick={nextStep} className="mt-4 p-2 btn btn-info text-white">
+            Iniciar sesión
+          </button>
+          <p className="mt-2 btn text-warning" onClick={() => setStep(99)}>¿Has olvidado tu contraseña?</p>
+          <p>¿No tienes una cuenta con nosotros?<span onClick={nextStep} className="btn text-warning">¡Crear una ahora!</span></p>
+        </div>
       )}
-	  {step === 2 && (
-        <div className="d-flex flex-column align-items-center">
+
+      {step === 2 && (
+        <div className="d-flex flex-column align-items-center text-center">
           <h2 className="text-xl font-bold">Te damos la bienvenida a Qué, Como y Cuándo</h2>
-          <p className="w-75">Donde podrás encontrar solución a todas las cuestiones que puedas tener para llevar una buena 
-            alimentación y completamente personalizada.</p>
+          <p className="w-75">Donde podrás encontrar solución a todas las cuestiones que puedas tener para llevar una buena alimentación y completamente personalizada.</p>
           <input
             type="text"
             name="name"
@@ -76,34 +97,36 @@ export const Login = () => {
             className="w-50 p-2 mt-2 border rounded"
           />
           <input
-          type="email"
-          name="password"
-          placeholder="Crea una contraseña"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-50 p-2 mt-3 border rounded"
+            type="password"
+            name="password"
+            placeholder="Crea una contraseña"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-50 p-2 mt-2 border rounded"
           />
           <button onClick={nextStep} className="mt-4 p-2 btn btn-info text-white">
             Siguiente
           </button>
         </div>
       )}
+
       {step === 3 && (
         <div className="d-flex flex-column align-items-center">
-        <h2 className="text-xl font-bold">Selecciona tu sexo biológico</h2>
-        <div className="d-flex justify-content-center mt-3">
-          <button onClick={() => selectSex("Hombre")} className="m-2 p-3 btn btn-info w-50 text-white">
-            Hombre
-          </button>
-          <button onClick={() => selectSex("Mujer")} className="m-2 p-3 btn btn-warning w-50 text-white">
-            Mujer
-          </button>
+          <h2 className="text-xl font-bold">Selecciona tu sexo biológico</h2>
+          <div className="d-flex justify-content-center mt-3">
+            <button onClick={() => selectSex("Hombre")} className="m-2 p-3 btn btn-warning w-50">
+              Hombre
+            </button>
+            <button onClick={() => selectSex("Mujer")} className="m-2 p-3 btn btn-warning w-50">
+              Mujer
+            </button>
+          </div>
         </div>
-      </div>
       )}
+
       {step === 4 && (
         <div className="text-center">
-          <h2 className="text-xl font-bold">¿Tienes un objetivo?</h2>
+          <h2 className="text-xl font-bold">¿Cuál es tu objetivo principal?</h2>
           <select
             name="objective"
             value={formData.objective}
@@ -111,59 +134,77 @@ export const Login = () => {
             className="w-full p-2 mt-2 border rounded"
           >
             <option value="">Selecciona un objetivo</option>
-            <option value="lose">Perder peso</option>
-            <option value="gain">Ganar peso</option>
-            <option value="maintain">Mantenerse</option>
-
+            <option value="Perder peso">Perder peso</option>
+            <option value="Ganar peso">Ganar peso</option>
+            <option value="Mantenerse">Mantenerse</option>
+            <option value="Ganar masa muscular">Ganar masa muscular</option>
           </select>
           <div className="flex justify-between mt-4">
-            <button onClick={prevStep} className="m-1 p-2 btn btn-primary">Atrás</button>
-            <button onClick={nextStep} className="m-1 p-2 btn btn-primary">Siguiente</button>
+            <button onClick={prevStep} className="m-1 p-2 btn btn-secondary">Atrás</button>
+            <button onClick={nextStep} className="m-1 p-2 btn btn-warning">Siguiente</button>
           </div>
         </div>
       )}
 
       {step === 5 && (
-        <div className="text-center">
+        <div className="d-flex flex-column align-items-center">
           <h2 className="text-xl font-bold">Altura</h2>
           <input
-            type="text"
+            type="number"
             name="height"
             placeholder="En centímetros"
             value={formData.height}
             onChange={handleChange}
-            className="w-full p-2 mt-2 border rounded"
+            className="w-40 p-2 mt-2 border rounded text-center"
           />
-		  <h2 className="text-xl font-bold">Peso</h2>
-          <input
-            type="text"
-            name="weight"
-            placeholder="En kilogramos"
-            value={formData.weight}
-            onChange={handleChange}
-            className="w-full p-2 mt-2 border rounded"
-          />
+          <div className="w-40 flex items-center justify-center mt-4 text-center">
+            <h2>Peso</h2>
+            <input
+              type="number"
+              name="weight"
+              placeholder="Tu peso"
+              value={weight}
+              onChange={handleWeightChange}
+              className="p-2 border rounded text-center"
+            />
+            <select
+              value={unit}
+              onChange={handleUnitChange}
+              className="ml-2 p-2 border rounded bg-gray-100"
+            >
+              <option value="kg">kg</option>
+              <option value="lb">lb</option>
+            </select>
+          </div>
           <div className="flex justify-between mt-4">
-            <button onClick={prevStep} className="m-1 p-2 btn btn-secondary">Atrás</button>
-            <button onClick={nextStep} className="m-1 p-2 btn btn-info">Finalizar</button>
+            <button onClick={prevStep} className="m-1 p-2 btn btn-secondary">
+              Atrás
+            </button>
+            <button onClick={nextStep} className="m-1 p-2 btn btn-warning">
+              Siguiente
+            </button>
           </div>
         </div>
       )}
 
       {step === 6 && (
-        <div>
+        <div className="d-flex flex-column align-items-center">
           <h2 className="text-xl font-bold">Confirmación</h2>
+          <p>Estos son los datos que tenemos de ti por ahora. 
+            ¡Podrás actualizarlos en tu perfil cuando quieras! ☺️</p>
+
           <p><strong>Nombre:</strong> {formData.name}</p>
           <p><strong>Correo:</strong> {formData.email}</p>
           <p><strong>Sexo Biológico:</strong> {formData.sex}</p>
           <p><strong>Objetivo:</strong> {formData.objective}</p>
           <p><strong>Altura:</strong> {formData.height}</p>
-		      <p><strong>Peso:</strong> {formData.weight}</p>
-          <button onClick={() => alert("Registro completado")} className="mt-4 p-2 btn btn-success">
+          <p><strong>Peso:</strong> {weight} {unit}</p>
+          <button onClick={() => alert("Registro completado")} className="mt-4 p-2 btn btn-info text-white">
             Confirmar y Registrarse
           </button>
         </div>
       )}
+
       {step === 99 && (
         <div className="d-flex flex-column align-items-center">
           <img src="https://i.imgur.com/20vE9hf.jpeg" className="img-fluid w-25"></img>
@@ -184,5 +225,5 @@ export const Login = () => {
         </div>
       )}
     </div>
-	);
+  );
 };
