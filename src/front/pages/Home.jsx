@@ -33,14 +33,14 @@ export const Home = () => {
 
 	return (
 		<div className="text-center mt-5">
-			<h1 className="display-4 ">Hello Estamos en construcción!!</h1>
+			<h1 className="display-4 ">Bienvenidos, Estamos en construcción!!</h1>
 			<p className="lead">
 				<img
 				style={{
 					width:"400px",
 					height:"400px",						
 					}}
-				src="https://i.imgur.com/CckqetR.png" className="img-fluid rounded-circle mb-3 " alt="Rigo Baby" />
+				src="https://s1.1zoom.me/big0/774/Creative_Vegetables_Potato_Chili_pepper_Tomatoes_606461_1024x1024.jpg" className="img-fluid rounded-circle mb-3 " alt="Rigo Baby" />
 			</p>
 			<div className="alert alert-info">
 				{store.message ? (

@@ -1,13 +1,14 @@
 import React from "react";
-import { Navbar, Nav, Container, Form, FormControl, Button } from "react-bootstrap";
+import { Navbar, Nav, Container, Form, FormControl, Button, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { FaUser } from "react-icons/fa";
 
 const NavbarProject = () => {
 	const logoUrl = "https://i.imgur.com/CckqetR.png";
 	return (
-		<Navbar bg="info-subtle" expand="lg" sticky="top">
+		<Navbar bg="light" expand="lg" sticky="top">
 			<Container>
-				{/*Que, Como y cuando*/}
+				{/*Logo y titulo*/}
 				<Navbar.Brand as={Link} to="/" className="d-flex align-items-center" style={{height:"60px"}}>
 					<img src={logoUrl}
 					alt="Logo"
@@ -22,7 +23,7 @@ const NavbarProject = () => {
 						e.target.src = "https://via.placeholder.com/40";
 					 }}
 					 />
-				<span className="fw-bold text-info fs-4 ">
+				<span className="fw-bold text-dark fs-4 ">
 					Que, Como y Cuando
 				</span>	
 				</Navbar.Brand>
@@ -53,21 +54,18 @@ const NavbarProject = () => {
 					</Form>
 
 					{/*inicio de sesión*/}
-					<div>
-						<Button
-							variant="outline-info"
-							className="me-2"
-							as={Link}
-							to="/login" >
-								Iniciar Sesión
-							</Button>
-							<Button 
-							variant="light"
-							as={Link}
-							to="/register">
-								Registrarse
-							</Button>
-					</div>
+					<NavDropdown
+						title={<FaUser size={30} className="text-info" />}
+						align="end"
+						className="user-dropdown"
+					>
+						<NavDropdown.Item as={Link} to="/login" className="text-dark">
+						Iniciar Sesión
+						</NavDropdown.Item>
+						<NavDropdown.Item as={Link} to="/register" className="text-dark">
+						Registrarse
+						</NavDropdown.Item>
+					</NavDropdown>
 				</Navbar.Collapse>
 			</Container>
 		</Navbar>
