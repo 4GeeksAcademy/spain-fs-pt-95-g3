@@ -6,8 +6,8 @@ import { FaUser } from "react-icons/fa";
 const NavbarProject = () => {
 	const logoUrl = "https://i.imgur.com/CckqetR.png";
 	return (
-		<Navbar bg="light" expand="lg" sticky="top">
-			<Container>
+		<Navbar bg="light" expand="lg" sticky="top" className="shadow">
+			<Container className="rounded">
 				{/*Logo y titulo*/}
 				<Navbar.Brand as={Link} to="/" className="d-flex align-items-center" style={{height:"60px"}}>
 					<img src={logoUrl}
