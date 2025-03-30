@@ -13,6 +13,8 @@ import { Demo } from "./pages/Demo";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
 import { Register } from "./pages/Register";
+import { Favorites } from "./pages/Favorites";
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -32,6 +34,7 @@ export const router = createBrowserRouter(
         <Route path= "/login" element={<Login />} />
         <Route path= "/profile" element={<Profile />} />
         <Route path= "/register" element={<Register />} />
+        <Route path= "/favorites" element={<Favorites />} />
       </Route>
     )
 );

@@ -74,7 +74,9 @@ const NavbarProject = () => {
 						Registrarse
 						</NavDropdown.Item>
 					</NavDropdown>
+					<Nav as={Link} to="/favorites" className="text-secondary"><i href="" class="fi fi-rs-heart m-2 fs-3"></i></Nav>
 				</Navbar.Collapse>
+				
 			</Container>
 		</Navbar>
 	);

@@ -1,4 +1,5 @@
 /* Efecto hover suave */
+
 .navbar-brand:hover img {
     opacity: 0.9;
     transform: scale(1.05);
