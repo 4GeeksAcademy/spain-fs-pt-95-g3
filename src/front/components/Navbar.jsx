@@ -23,8 +23,8 @@ const NavbarProject = () => {
 						e.target.src = "https://via.placeholder.com/40";
 					 }}
 					 />
-				<span className="fw-bold text-dark fs-4 ">
-					Que, Como y Cuando
+				<span className="fw-bold text-dark fs-4">
+					Qué, Como y Cuándo
 				</span>	
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
