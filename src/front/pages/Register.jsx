@@ -1,5 +1,5 @@
 import React from "react";
 
 export const Register = () => {
-    return Registrarse
+    return <h1>Registro</h1>
 }

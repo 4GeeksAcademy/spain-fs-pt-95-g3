@@ -59,6 +59,14 @@ const NavbarProject = () => {
 						align="end"
 						className="user-dropdown"
 					>
+						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
+						Hola "insertar nombre"
+						</NavDropdown.Item>
+						<p><a href="#" class="link-underline-info  m-3">Salir</a></p>
+						<hr class="dropdown-divider m-0"></hr>
+						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
+						Perfil
+						</NavDropdown.Item>
 						<NavDropdown.Item as={Link} to="/login" className="text-dark">
 						Iniciar Sesión
 						</NavDropdown.Item>
