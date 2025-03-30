@@ -34,10 +34,10 @@ const NavbarProject = () => {
 						<Nav.Link as={Link} to="/" className="mx-2">
 						Página Principal
 						</Nav.Link>
-						<Nav.Link as={Link} to="/recetas" className="mx-2">
+						<Nav.Link as={Link} to="/recipes" className="mx-2">
 						Recetas
 						</Nav.Link>
-						<Nav.Link as={Link} to="/planificador" className="mx-2">
+						<Nav.Link as={Link} to="/planning" className="mx-2">
 						Mi Plan
 						</Nav.Link>
 					</Nav>
