@@ -20,3 +20,29 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@api.route('/register', methods=['POST'])
+def register():
+    data = request.json
+
+    required_fields = ['username', 'password', 'email', 'birthdate', 'objective', 'height', 'weight', 'sex']
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "Faltan campos obligatorios"}), 400
+
+    try:
+        new_user = User(
+            username=data['username'],
+            password=data['password'],  # Más adelante cambiar por un hash seguro
+            email=data['email'],
+            birthdate=data['birthdate'],
+            objective=data['objective'],
+            height=data['height'],
+            weight=data['weight'],
+            sex=data['sex']
+        )
+        session.add(new_user)
+        session.commit()
+        return jsonify({"message": "Usuario registrado con éxito"}), 201
+    except Exception as e:
+        session.rollback()  # Revertir cambios en caso de error
+        return jsonify({"error": str(e)}), 500

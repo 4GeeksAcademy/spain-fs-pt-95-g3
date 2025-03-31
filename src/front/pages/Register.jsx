@@ -49,10 +49,10 @@ export const Register = () => {
   const prevStep = () => setStep(step - 1);
 
   return (
-    <div className="p-4 max-w-md mx-auto border rounded-lg shadow-md">
+    <div className="p-4 border">
       {step === 1 && (
         <div className="d-flex flex-column align-items-center text-center">
-          <h2 className="text-xl font-bold">Te damos la bienvenida a Qué, Como y Cuándo</h2>
+          <h2>Te damos la bienvenida a Qué, Como y Cuándo</h2>
           <p className="w-75">Donde podrás encontrar solución a todas las 
             cuestiones que puedas tener para llevar una buena alimentación y completamente personalizada.</p>
           <input
@@ -61,7 +61,7 @@ export const Register = () => {
             placeholder="Nombre"
             value={formData.name}
             onChange={handleChange}
-            className="w-50 p-2 mt-2 border rounded"
+            className="w-50 p-2 mt-2 form-control"
           />
           <input
             type="email"
@@ -69,7 +69,7 @@ export const Register = () => {
             placeholder="Correo"
             value={formData.email}
             onChange={handleChange}
-            className="w-50 p-2 mt-2 border rounded"
+            className="w-50 p-2 mt-2 form-control"
           />
           <input
             type="password"
@@ -77,7 +77,22 @@ export const Register = () => {
             placeholder="Crea una contraseña"
             value={formData.password}
             onChange={handleChange}
-            className="w-50 p-2 mt-2 border rounded"
+            className="w-50 p-2 mt-2 form-control"
+          />
+          <button onClick={nextStep} className="mt-4 p-2 btn btn-warning">
+            Siguiente
+          </button>
+        </div>
+      )}
+      {step === 2 && (
+        <div className="d-flex flex-column align-items-center text-center">
+          <h2 className="text-xl font-bold">Fecha de nacimiento</h2>
+          <input
+            type="date"
+            name="birthdate"
+            value={formData.birthdate}
+            onChange={handleChange}
+            className="w-50 p-2 mt-2 form-control"
           />
           <button onClick={nextStep} className="mt-4 p-2 btn btn-warning">
             Siguiente
@@ -85,7 +100,7 @@ export const Register = () => {
         </div>
       )}
 
-      {step === 2 && (
+      {step === 3 && (
         <div className="d-flex flex-column align-items-center">
           <h2 className="text-xl font-bold">Selecciona tu sexo biológico</h2>
           <p>Necesitamos saberlo para poder calcular tu ingesta calórica recomendada
@@ -101,14 +116,14 @@ export const Register = () => {
         </div>
       )}
 
-      {step === 3 && (
+      {step === 4 && (
         <div className="text-center">
           <h2 className="text-xl font-bold">¿Cuál es tu objetivo principal?</h2>
           <select
             name="objective"
             value={formData.objective}
             onChange={handleChange}
-            className="w-full p-2 mt-2 border rounded"
+            className="w-full p-2 mt-2 form-control"
           >
             <option value="">Selecciona un objetivo</option>
             <option value="Perder peso">Perder peso</option>
@@ -123,7 +138,7 @@ export const Register = () => {
         </div>
       )}
 
-      {step === 4 && (
+      {step === 5 && (
         <div className="d-flex flex-column align-items-center">
           <h2 className="text-xl font-bold">Altura</h2>
           <input
@@ -132,7 +147,7 @@ export const Register = () => {
             placeholder="En centímetros"
             value={formData.height}
             onChange={handleChange}
-            className="w-40 p-2 mt-2 border rounded text-center"
+            className="w-40 p-2 mt-2 form-control text-center"
           />
           <div className="w-40 flex items-center justify-center mt-4 text-center">
             <h2>Peso</h2>
@@ -142,7 +157,7 @@ export const Register = () => {
               placeholder="Tu peso"
               value={weight}
               onChange={handleWeightChange}
-              className="p-2 border rounded text-center"
+              className="p-2 form-control text-center"
             />
             <select
               value={unit}
@@ -164,7 +179,7 @@ export const Register = () => {
         </div>
       )}
 
-      {step === 5 && (
+      {step === 6 && (
         <div className="d-flex flex-column align-items-center">
           <h2 className="text-xl font-bold">Confirmación</h2>
           <p>Estos son los datos que tenemos de ti por ahora. 
@@ -172,6 +187,7 @@ export const Register = () => {
 
           <p><strong>Nombre:</strong> {formData.name}</p>
           <p><strong>Correo:</strong> {formData.email}</p>
+          <p><strong>Fecha de nacimiento:</strong> {formData.birthdate}</p>
           <p><strong>Sexo Biológico:</strong> {formData.sex}</p>
           <p><strong>Objetivo:</strong> {formData.objective}</p>
           <p><strong>Altura:</strong> {formData.height}</p>
@@ -193,7 +209,7 @@ export const Register = () => {
             placeholder="Correo electrónico"
             value={formData.email}
             onChange={handleChange}
-            className="w-50 p-2 mt-3 border rounded"
+            className="w-50 p-2 mt-3 form-control"
           />
           <button className="btn btn-warning w-50 mt-3">Enviar</button>
           <button className="btn btn-secondary w-50 mt-2" onClick={() => setStep(1)}>

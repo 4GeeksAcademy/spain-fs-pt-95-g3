@@ -1,19 +1,33 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Column, Integer, String, Float, Boolean
+from sqlalchemy.orm import declarative_base, relationship
 
-db = SQLAlchemy()
 
-class User(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(nullable=False)
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+Base = declarative_base()
 
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String(30), nullable=False, unique=True)
+    password = Column(String(100), nullable=False)  # buscar info de hash seguro
+    email = Column(String(80), nullable=False, unique=True)
+    birthdate = Column(String(10), nullable=False)
+    objective = Column(String(50), nullable=True)
+    height = Column(Float, nullable=True)
+    weight = Column(Float, nullable=True)
+    sex = Column(String(10), nullable=True)
 
     def serialize(self):
         return {
             "id": self.id,
+            "username": self.username,
             "email": self.email,
+            "birthdate": self.birthdate,
+            "objective": self.objective,
+            "height": self.height,
+            "weight": self.weight,
+            "sex": self.sex,
             # do not serialize the password, its a security breach
         }
