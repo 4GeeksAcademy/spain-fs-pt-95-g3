@@ -1,41 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Carousel } from "react-bootstrap";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
 export const Home = () => {
   const { store, dispatch } = useGlobalReducer();
-  const [showModal, setShowModal] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState("");
-  const [currentImage, setCurrentImage] = useState("");
 
-  // Imágenes de ejemplo para cada categoría
-  const categoryImages = {
-    Desayuno: [
-      "https://images.unsplash.com/photo-1550583724-b2692b85b150",
-      "https://images.unsplash.com/photo-1484723091739-30a097e8f929",
-      "https://images.unsplash.com/photo-1490645935967-10de6ba17061"
-    ],
-    Almuerzo: [
-      "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
-      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
-      "https://images.unsplash.com/photo-1482049016688-2d3e1b311543"
-    ],
-    Cena: [
-      "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
-      "https://images.unsplash.com/photo-1544025162-d76694265947",
-      "https://images.unsplash.com/photo-1563379926898-05f4575a45d8"
-    ],
-    Vegano: [
-      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
-      "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
-      "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd"
-    ],
-    Vegetariano: [
-      "https://images.unsplash.com/photo-1490645935967-10de6ba17061",
-      "https://images.unsplash.com/photo-1505576633757-0ac1084af824",
-      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd"
-    ]
-  };
+  // Datos para el carrusel
+  const foodCategories = [
+    {
+      name: "Desayuno",
+      image: "https://images.unsplash.com/photo-1550583724-b2692b85b150",
+      description: "Comienza tu día con energía"
+    },
+    {
+      name: "Almuerzo",
+      image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+      description: "Recetas sustanciosas para mediodía"
+    },
+    {
+      name: "Cena",
+      image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
+      description: "Platos ligeros para terminar el día"
+    },
+    {
+      name: "Vegano",
+      image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
+      description: "Delicias 100% vegetales"
+    },
+    {
+      name: "Vegetariano",
+      image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061",
+      description: "Sabores naturales y frescos"
+    }
+  ];
 
   const loadMessage = async () => {
     try {
@@ -55,21 +52,13 @@ export const Home = () => {
     }
   };
 
-  const handleShowModal = (category) => {
-    setCurrentCategory(category);
-    // Selecciona una imagen aleatoria para la categoría
-    const randomIndex = Math.floor(Math.random() * categoryImages[category].length);
-    setCurrentImage(categoryImages[category][randomIndex]);
-    setShowModal(true);
-  };
-
   useEffect(() => {
     loadMessage();
   }, []);
 
   return (
     <div className="min-vh-100" style={{
-      background: "linear-gradient(135deg, rgb(249, 249, 250) 0%, rgb(168, 184, 209) 100%",
+      background: "linear-gradient(135deg, rgb(249, 249, 250) 20%, rgb(203, 212, 226) 100%",
       padding: "2rem 0"
     }}>
       <div className="container">
@@ -113,62 +102,8 @@ export const Home = () => {
               <p className="mb-0 text-muted">{store.hello}</p>
             </div>
           )}
-          
-          {/* Sección de botones de categorías */}
-          <div className="mt-5 pt-4">
-            <h4 className="mb-4">Explora nuestras categorías</h4>
-            <div className="d-flex flex-wrap justify-content-center gap-3">
-              {Object.keys(categoryImages).map((category) => (
-                <Button
-                  key={category}
-                  variant="outline-primary"
-                  className="category-btn"
-                  onClick={() => handleShowModal(category)}
-                  style={{
-                    minWidth: "120px",
-                    padding: "10px 15px",
-                    borderRadius: "50px",
-                    borderWidth: "2px",
-                    fontWeight: "600"
-                  }}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
-      
-      {/* Modal para mostrar imágenes */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{currentCategory}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="text-center">
-          <img 
-            src={currentImage} 
-            alt={currentCategory}
-            className="img-fluid rounded"
-            style={{ maxHeight: "60vh", width: "auto" }}
-          />
-          <div className="mt-3">
-            <Button 
-              variant="primary"
-              onClick={() => handleShowModal(currentCategory)}
-              className="me-2"
-            >
-              Ver otra imagen
-            </Button>
-            <Button 
-              variant="secondary"
-              onClick={() => setShowModal(false)}
-            >
-              Cerrar
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
     </div>
   );
 };
