@@ -1,5 +1,6 @@
-import React from "react";
-import { useState } from "react";
+import React, { useContext, useState } from "react";
+import { UserContext } from "../Context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export const Register = () => {
   const [step, setStep] = useState(1);
@@ -14,6 +15,7 @@ export const Register = () => {
     sex: "",
   });
 
+  const navigate = useNavigate();
   const [weight, setWeight] = useState("");
   const [unit, setUnit] = useState("kg");
 
@@ -36,7 +38,8 @@ export const Register = () => {
     let newWeight = weight;
 
     if (newUnit === "lb" && unit === "kg") {
-      newWeight = (weight * 2.20462).toFixed(2);  // Kg a libras
+      newWeight = (weight * 2.20462).toFixed(2);  // Kg a libras redondeando 2 decimales
+      
     } else if (newUnit === "kg" && unit === "lb") {
       newWeight = (weight / 2.20462).toFixed(2);  // Libras a kg
     }
@@ -47,6 +50,52 @@ export const Register = () => {
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
+
+  const handleRegister = async () => {
+
+      // para que funcione bien el navigate
+    const userData = {
+      "username": "formData.name", 
+      "password": "formData.password",
+      "email": "formData.email",
+      "birthdate": "formData.birthdate",
+      "objective": "formData.objective",
+      "height": "formData.height",
+      "sex": "formData.sex",  
+      "weight": "weight",         
+      "unit": "unit"
+    };
+    console.log(userData);
+    try {
+      const response = await fetch("https://shiny-adventure-7vpj4gxjrv55cppr-3001.app.github.dev/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+  
+      const data = await response.json(); // preguntar la función de esta línea
+  
+      if (response.status >= 200 && response.status < 300) {
+        alert("Registro completado con éxito!");
+        console.log("Respuesta del backend:", data);
+
+         // Actualizamos el contexto con toda la info y guardamos el peso y unidad
+        setFormData(userData);    
+        setWeight(weight);        
+        setUnit(unit);           
+        navigate("/profile");      // Redirige al perfil después de registrar
+
+      } else {
+        alert(`Error: ${data.error || data.message}`);
+      }
+    } catch (error) {
+      console.error("Error al conectar con el backend:", error);
+      alert("Hubo un problema al intentar registrarte.");
+    }
+  };
+  
 
   return (
     <div className="p-4 border">
@@ -117,13 +166,13 @@ export const Register = () => {
       )}
 
       {step === 4 && (
-        <div className="text-center">
+        <div className="d-flex flex-column align-items-center">
           <h2 className="text-xl font-bold">¿Cuál es tu objetivo principal?</h2>
           <select
             name="objective"
             value={formData.objective}
             onChange={handleChange}
-            className="w-full p-2 mt-2 form-control"
+            className="w-50 p-2 mt-2 form-control"
           >
             <option value="">Selecciona un objetivo</option>
             <option value="Perder peso">Perder peso</option>
@@ -140,33 +189,35 @@ export const Register = () => {
 
       {step === 5 && (
         <div className="d-flex flex-column align-items-center">
-          <h2 className="text-xl font-bold">Altura</h2>
+          <h2>Altura</h2>
           <input
             type="number"
             name="height"
             placeholder="En centímetros"
             value={formData.height}
             onChange={handleChange}
-            className="w-40 p-2 mt-2 form-control text-center"
+            className="w-50 p-2 mt-2 form-control text-center"
           />
-          <div className="w-40 flex items-center justify-center mt-4 text-center">
+          <div className="w-50 flex items-center justify-center mt-4 text-center">
             <h2>Peso</h2>
-            <input
-              type="number"
-              name="weight"
-              placeholder="Tu peso"
-              value={weight}
-              onChange={handleWeightChange}
-              className="p-2 form-control text-center"
-            />
-            <select
-              value={unit}
-              onChange={handleUnitChange}
-              className="ml-2 p-2 border rounded bg-gray-100"
-            >
-              <option value="kg">kg</option>
-              <option value="lb">lb</option>
-            </select>
+            <div className="w-100">
+              <input
+                type="number"
+                name="weight"
+                placeholder="Tu peso"
+                value={weight}
+                onChange={handleWeightChange}
+                className="col-9 p-2 border rounded text-center"
+              />
+              <select
+                value={unit}
+                onChange={handleUnitChange}
+                className="col-3 ml-2 p-2 border rounded"
+              >
+                <option value="kg">kg</option>
+                <option value="lb">lb</option>
+              </select>
+            </div>
           </div>
           <div className="flex justify-between mt-4">
             <button onClick={prevStep} className="m-1 p-2 btn btn-secondary">
@@ -192,7 +243,7 @@ export const Register = () => {
           <p><strong>Objetivo:</strong> {formData.objective}</p>
           <p><strong>Altura:</strong> {formData.height}</p>
           <p><strong>Peso:</strong> {weight} {unit}</p>
-          <button onClick={() => alert("Registro completado")} className="mt-4 p-2 btn btn-info text-white">
+          <button onClick={handleRegister} className="mt-4 p-2 btn btn-info text-white">
             Confirmar y Registrarse
           </button>
         </div>

@@ -9,8 +9,8 @@ from flask_cors import CORS
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
-CORS(api)
 
+CORS(api, origins=["*"])
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -30,7 +30,7 @@ def register():
         return jsonify({"error": "Faltan campos obligatorios"}), 400
 
     try:
-        new_user = User(
+        new_user = User( 
             username=data['username'],
             password=data['password'],  # Más adelante cambiar por un hash seguro
             email=data['email'],
@@ -40,9 +40,10 @@ def register():
             weight=data['weight'],
             sex=data['sex']
         )
-        session.add(new_user)
-        session.commit()
+        db.session.add(new_user)
+        db.session.commit()
         return jsonify({"message": "Usuario registrado con éxito"}), 201
     except Exception as e:
-        session.rollback()  # Revertir cambios en caso de error
-        return jsonify({"error": str(e)}), 500
+        print(e)
+        db.session.rollback()  # Revertir cambios en caso de error
+        return jsonify({"Parece que algo salió mal": str(e)}), 500

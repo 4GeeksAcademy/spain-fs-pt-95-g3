@@ -3,11 +3,11 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Column, Integer, String, Float, Boolean
 from sqlalchemy.orm import declarative_base, relationship
 
-
+db = SQLAlchemy()
 Base = declarative_base()
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = "Users"
 
     id = Column(Integer, primary_key=True)
     username = Column(String(30), nullable=False, unique=True)
@@ -29,5 +29,4 @@ class User(Base):
             "height": self.height,
             "weight": self.weight,
             "sex": self.sex,
-            # do not serialize the password, its a security breach
         }
