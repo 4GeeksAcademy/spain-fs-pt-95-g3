@@ -32,17 +32,22 @@ export const Carrusel = () => {
 
   return (
     <div className="container">
-      <h2 className="text-center mt-2 mb-2 text-info">Nuestras Categorías</h2>
+        <h1 className="display-4 fw-bold mb-4 text-center py-3 text-info" style={{
+            textShadow: "1px 1px 2px rgba(0,0,0,0.1)"
+          }}>
+            Bienvenidos a Que, Como y Cuando
+          </h1>
       <Carousel interval={3000} pause={false}>
         {foodCategories.map((category, index) => (
           <Carousel.Item key={index}>
             <div style={{ height: "300px", overflow: "hidden"}}>
+              
               <img
                 className="d-block w-100 h-100"
                 src={category.image}
                 alt={category.name}
                 style={{ objectFit: "cover", borderRadius: "10px" }}
-              />
+              />                          
             </div>
             <Carousel.Caption style={{ background: "rgba(0,0,0,0.5)", borderRadius: "10px" }}>
               <h3>{category.name}</h3>

@@ -30,7 +30,7 @@ const NavbarProject = () => {
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar-nav">
 					{/*menu de navegacion*/}
-					<Nav classname="me-auto">
+					<Nav className="me-auto">
 						<Nav.Link as={Link} to="/" className="mx-2">
 						Página Principal
 						</Nav.Link>
@@ -64,6 +64,9 @@ const NavbarProject = () => {
 						</NavDropdown.Item>
 						<NavDropdown.Item as={Link} to="/register" className="text-dark">
 						Registrarse
+						</NavDropdown.Item>
+						<NavDropdown.Item as={Link} to="/register" className="text-dark">
+						Perfil
 						</NavDropdown.Item>
 					</NavDropdown>
 				</Navbar.Collapse>

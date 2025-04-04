@@ -36,25 +36,3 @@
 .user-dropdown .dropdown-item:hover {
   background-color: #f8f9fa;
 }
-
-/* Agrega esto a tu CSS */
-.category-carousel {
-  max-width: 800px;
-  margin: 0 auto;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.category-carousel .carousel-caption {
-  bottom: auto;
-  top: 0;
-  height: 100%;
-  display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.category-carousel .carousel-item {
-  height: 300px;
-}
