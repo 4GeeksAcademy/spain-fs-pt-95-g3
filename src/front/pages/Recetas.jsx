@@ -22,7 +22,7 @@ export const Recetas = () => {
       if(searchQuery) {
         endpoint = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&query=${searchQuery}&number=9&addRecipeInformation=true`;
         response = await axios.get(endpoint);
-        setRecetas(response.data.result); }
+        setRecetas(response.data.results); }
         else {
           endpoint = `https://api.spoonacular.com/recipes/random?apiKey=${API_KEY}&number=9`;
           response = await axios.get(endpoint);
@@ -67,19 +67,56 @@ export const Recetas = () => {
     }
 
     return (
-    <Container className="my-5">
-      <h1 className="text-center mb-4">Nuestras Recetas</h1>
+    <Container className="my-5 p-4 rounded-3"
+    style={{
+      background: "linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%",
+      boxShadow: "0 4px 15px rgba(0,0,0,0.1"
+    }}>
+      <h1 className="text-center mb-4"
+      style={{
+        color: "#2c3e50",
+        fontWeight: "700",
+        textShadow: "1px 1px 3px rgba(0,0,0,0.1)",
+        position: "relative",
+        paddingBottom: "10px"
+      }}>Nuestras Recetas
+      <span style={{
+              content: "",
+              display: "block",
+              width: "80px",
+              height: "4px",
+              background: "#3498db",
+              margin: "10px auto 0",
+              borderRadius: "2px"
+      }}></span></h1>
       
-      <Form onSubmit={handleSearch} className="mb-4">
+      <Form 
+        onSubmit={handleSearch}
+        className="mb-4 p-3 rounded"
+        style={{
+          background: "rgba(255,255,255,0.8)",
+          backdropFilter: "blr(5px)",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.05)"
+        }}>
         <div className="d-flex">
           <Form.Control 
             type="search"
-            placeholder="Buscar recetas (ej. ensalada, pollo)..."
+            placeholder="🔍 Buscar recetas (ej. ensalada, pollo)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="me-2" 
+            className="me-2 py-2 border-0 shadow-sm"
+            style={{borderRadius: "12px"}} 
           />
-          <Button variant="primary" type="submit">
+          <Button
+           variant="info"
+           type="submit"
+           className="px-4"
+           style={{
+            borderRadius: "12px",
+            frontWeight: "600",
+            background: "linear-gradient(135deg, #3498db 0%, #2c3e50 100%)",
+            border: "none"
+           }}>
             Buscar
           </Button>        
         </div>
