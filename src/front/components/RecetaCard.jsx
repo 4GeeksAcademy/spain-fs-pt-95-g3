@@ -15,12 +15,13 @@ import { Card, Button } from "react-bootstrap"
               onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}>
             <Card.Img 
              variant="top"
-             src={image}
-             alt={title}
+             src={receta.image || '/img/receta-default.jpg'}
+             alt={receta.title}
              style={{ height: "200px",
                       objectFit: "cover",
                       borderTopLeftRadius: "15px",
                       borderTopRightRadius: "15px"}}
+             onError={(e) => { e.target.src = '/img/receta-default.jpg';}}         
             />
             <Card.Body>
                 <Card.Title>{title}</Card.Title>

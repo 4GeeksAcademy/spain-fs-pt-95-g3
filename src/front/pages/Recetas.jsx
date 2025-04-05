@@ -19,14 +19,27 @@ export const Recetas = () => {
       let endpoint;
       let response;
 
+      if (!searchQuery) {
+        const cachedRecetas = localStorage.getItem('cachedRecetas');
+        if (cachedRecetas) {
+          setRecetas(JSON.parse(cachedRecetas));
+          setLoading(false);
+          return;
+        }
+      }
+
       if(searchQuery) {
-        endpoint = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&query=${searchQuery}&number=9&addRecipeInformation=true`;
+        endpoint = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&query=${encodeURIComponent(searchQuery)}&number=9&addRecipeInformation=true`;
         response = await axios.get(endpoint);
         setRecetas(response.data.results); }
         else {
           endpoint = `https://api.spoonacular.com/recipes/random?apiKey=${API_KEY}&number=9`;
           response = await axios.get(endpoint);
-          setRecetas(response.data.recipes);
+          setRecetas(response.data.recipes);          
+        }
+
+        if (!searchQuery) {
+          localStorage.setItem('cachedRecetas', JSON.stringify(response.data.recipes || []));
         }
       } catch (err) {
         setError("Error al cargar las recetas. Por favor intenta más tarde.");
@@ -36,7 +49,13 @@ export const Recetas = () => {
       }
     };
     useEffect(() => {
-      fetchRecetas();
+      const cachedRecetas = localStorage.getItem('cachedRecetas');
+      if(cachedRecetas && !query) {
+        setRecetas(JSON.parse(cachedRecetas));
+        setLoading(false);
+      } else {
+        fetchRecetas();
+      }
     }, []);
 
     const handleSearch = (e) => {
@@ -58,7 +77,13 @@ export const Recetas = () => {
     if(error) {
       return (
         <Container className="text-center my-5">
-          <div className="alert alert-danger">{error}</div>
+          <div className="alert alert-danger">
+            <h5>¡Ups! Algo salío mal</h5>
+            <p>{error}</p>
+            {error.includes('402') && (
+              <p>Límite de búsquedas alcanzado. Prueba de nuevo mañana.</p>
+            )}
+          </div>
           <Button variant="primary" onClick={() => fetchRecetas()}>
             Reintentar
           </Button>
@@ -114,7 +139,7 @@ export const Recetas = () => {
            style={{
             borderRadius: "12px",
             frontWeight: "600",
-            background: "linear-gradient(135deg, #3498db 0%, #2c3e50 100%)",
+            background: "linear-gradient(135deg,rgb(125, 229, 236) 0%,rgb(240, 243, 247) 100%)",
             border: "none"
            }}>
             Buscar
