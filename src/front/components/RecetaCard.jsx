@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap"
+import { Link } from 'react-router-dom'
 
  export const RecetaCard = ({receta}) => {
     const title = receta.title || receta.name;
@@ -30,7 +31,11 @@ import { Card, Button } from "react-bootstrap"
                 </Card.Text>
             </Card.Body>
             <Card.Footer>
-                <Button variant="info" className="w-100">
+                <Button variant="info"
+                 as={Link}
+                 to={`/receta/${receta.id}`}                 
+                 rel="noopener noreferrer"
+                 className="w-100">
                     Ver Receta
                 </Button>
             </Card.Footer>
