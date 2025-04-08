@@ -125,7 +125,6 @@ export const Register = () => {
 
   const handleRegister = async () => {
 
-    navigate("/profile");
     const userData = {
       username: escapeJsonString(formData.name), 
       password: escapeJsonString(formData.password),
@@ -157,6 +156,8 @@ export const Register = () => {
         setFormData(userData);    
         setWeight(weight);        
         setUnit(unit);           
+
+        navigate("/profile");
 
       } else {
         alert(`Error: ${data.error || data.message}`);
