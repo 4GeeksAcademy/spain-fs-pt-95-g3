@@ -52,8 +52,8 @@ def login():
     if not user:
         return jsonify({"error": "Credenciales inválidas"}), 401
 
-    access_token = create_access_token(identity=user.id, expires_delta=timedelta(days=1))
-
+    access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(days=1)) 
+ # meter en str cuando pongamos datos
     return jsonify({
         "access_token": access_token,
         "user_id": user.id,
@@ -64,7 +64,10 @@ def login():
 @jwt_required()
 def profile():
     user_id = get_jwt_identity()
+    print(f"User ID: {user_id}") # Verifica el ID
+
     user = User.query.get(user_id)
+    
 
     if not user:
         return jsonify({"error": "Usuario no encontrado"}), 404

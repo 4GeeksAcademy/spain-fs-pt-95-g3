@@ -10,19 +10,21 @@ export const Profile = () => {
 
       if (!token) {
         setError("No hay token. Por favor inicia sesión.");
-        return;
+        return; //detener si no hay token
       }
 
       try {
+        console.log(token)
         const res = await fetch("https://laughing-waffle-x5vgqj4g9556hv95x-3001.app.github.dev/api/profile", {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
         });
 
         const data = await res.json();
-
+        console.log(data);
         if (res.ok) {
           setUserData(data);
         } else {
@@ -35,7 +37,7 @@ export const Profile = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, []);  //ejecutar fetchPr una sola vez al montar el componente
 
   if (error) return <p>{error}</p>;
   if (!userData) return <p>Cargando perfil...</p>;
