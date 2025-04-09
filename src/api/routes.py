@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from flask_jwt_extended import create_access_token 
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta  
 
 api = Blueprint('api', __name__)
@@ -58,4 +58,24 @@ def login():
         "access_token": access_token,
         "user_id": user.id,
         "username": user.username
+    }), 200
+
+@api.route('/profile', methods=['GET'])
+@jwt_required()
+def profile():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "birthdate": user.birthdate,
+        "objective": user.objective,
+        "height": user.height,
+        "weight": user.weight,
+        "sex": user.sex
     }), 200

@@ -28,9 +28,9 @@ export const Login = () => {
             const data = await res.json();
 
             if (res.ok) {
-                // Guarda el token
-                localStorage.setItem("token", data.token);
-                // ajustar
+
+                localStorage.setItem("access_token", data.access_token);
+                // ajustar a planning o recipes
                 navigate("/profile");
             } else {
                 setError(data.message || "Error al iniciar sesión");
