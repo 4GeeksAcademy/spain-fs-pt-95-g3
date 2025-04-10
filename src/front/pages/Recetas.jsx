@@ -8,10 +8,12 @@ export const Recetas = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
-
+  
   const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 
-  const fetchRecetas = async (searchQuery = "") => {
+  const fetchRecetas = async (searchQuery = "", resetOffset = true) => {
+
+    if(resetOffset) setOffset(0);
     setLoading(true);
     setError(null);
 
@@ -162,6 +164,7 @@ export const Recetas = () => {
             Mostrar recetas aleatorias
           </Button>
         </div>
+        
       )}  
     </Container>
   );

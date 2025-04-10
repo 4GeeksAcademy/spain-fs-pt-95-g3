@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row, Col, Card, ProgressBar, Button } from "react-bootstrap";
 import { FaFire, FaWalking, FaTrophy } from "react-icons/fa";
 
-export const Demo = () => {
+export const MiPlan = () => {
   const userData = {
     nombre: "Adrian Silva",
     edad: 24,
