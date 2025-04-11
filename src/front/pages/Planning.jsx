@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 //eliminar estas const y poner llamadas a la api de Arley en handleBuscar
 const comidasDelDia = ['Desayuno', 'Almuerzo', 'Cena', 'Merienda'];
@@ -21,6 +21,14 @@ export const Planning = () => {
     Cena: [],
     Merienda: []
   });
+
+  // Cargar datos previos si existen
+  useEffect(() => {
+    const datosGuardados = localStorage.getItem('comidas');
+    if (datosGuardados) {
+      setComidas(JSON.parse(datosGuardados));
+    }
+  }, []);
 
   const handleBuscar = (evento) => {
     const textoBuscado = evento.target.value;
@@ -50,6 +58,11 @@ export const Planning = () => {
     }));
     setBusqueda('');
     setResultados([]);
+  };
+
+  const guardarDatos = () => {   // guarda en localStorage como JSON
+    localStorage.setItem('comidas', JSON.stringify(comidas));
+    alert('¡Datos guardados correctamente!');
   };
 
   return (
@@ -110,6 +123,9 @@ export const Planning = () => {
           ))}
         </tbody>
       </table>
+      <button className="btn btn-warning mt-3" onClick={guardarDatos}>
+        Guardar información
+      </button>
     </div>
   );
 }

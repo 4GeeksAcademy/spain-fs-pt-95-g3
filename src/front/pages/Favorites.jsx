@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 
 export const Favorites = () => {
-    // Más adelante, pasaremos favoritos como props y los usarás así:
+    // Más adelante hay que borrar y hacer fetch a la api
     // const Favorites = ({ favorites }) => {
     
-    // Ejemplo (eliminaremos esto cuando usemos props)
     const [activeTab, setActiveTab] = useState('recipes'); // recetas o alimentos
 
-    // Ejemplos simulados de recetas y alimentos favoritos
+    // Ejemplos simulados
   const favoriteRecipes = [
     { name: 'Ensalada César', description: 'Pollo, lechuga y aderezo César.', image: 'https://via.placeholder.com/150' },
     { name: 'Pizza Margarita', description: 'Tomate, mozzarella y albahaca.', image: 'https://via.placeholder.com/150' }
