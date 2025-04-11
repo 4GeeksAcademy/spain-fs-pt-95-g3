@@ -22,28 +22,25 @@ export const Recetas = () => {
       let response;
 
       if (!searchQuery) {
+        endpoint = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&query=${encodeURIComponent(searchQuery)}&number=9&addRecipeInformation=true`;
+        response = await axios.get(endpoint);
+        setRecetas(response.data.results); 
+      }   
+      else {
+        localStorage.setItem('cachedRecetas', JSON.stringify(response.data.recipes || []));
         const cachedRecetas = localStorage.getItem('cachedRecetas');
+        endpoint = `https://api.spoonacular.com/recipes/random?apiKey=${API_KEY}&number=9`;
+        response = await axios.get(endpoint);
+        setRecetas(response.data.recipes);
         if (cachedRecetas) {
           setRecetas(JSON.parse(cachedRecetas));
           setLoading(false);
           return;
-        }
+        }          
       }
 
-      if(searchQuery) {
-        endpoint = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&query=${encodeURIComponent(searchQuery)}&number=9&addRecipeInformation=true`;
-        response = await axios.get(endpoint);
-        setRecetas(response.data.results); }
-        else {
-          endpoint = `https://api.spoonacular.com/recipes/random?apiKey=${API_KEY}&number=9`;
-          response = await axios.get(endpoint);
-          setRecetas(response.data.recipes);          
-        }
-
-        if (!searchQuery) {
-          localStorage.setItem('cachedRecetas', JSON.stringify(response.data.recipes || []));
-        }
-      } catch (err) {
+      }
+       catch (err) {
         setError("Error al cargar las recetas. Por favor intenta más tarde.");
         console.error("Error fetching recipes:", err);
       } finally {

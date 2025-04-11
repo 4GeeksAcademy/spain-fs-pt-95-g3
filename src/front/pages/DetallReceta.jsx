@@ -4,6 +4,7 @@ import axios from "axios";
 import {Container, Row, Col, Image, Button, Spinner} from 'react-bootstrap'
 
 export const DetallReceta = () => {
+    const API_BASE_URL = "https://api.spoonacular.com/recipes";
     const {id} = useParams();
     const [receta, setReceta] = useState(null)
     const [loading, setLoading] = useState(true);
@@ -11,7 +12,7 @@ export const DetallReceta = () => {
     const fetchRecetaCompleta = async () => {
         try {const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
             const response = await axios.get(
-                `https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}&includeNutrition=true`
+                `${API_BASE_URL}/${id}/information?apiKey=${API_KEY}&includeNutrition=true`
             );
 
             const recetasDetalladas = JSON.parse(localStorage.getItem('recetasDetalladas')) || {};
