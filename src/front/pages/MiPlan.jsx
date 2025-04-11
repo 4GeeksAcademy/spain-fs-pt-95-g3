@@ -6,7 +6,6 @@ export const MiPlan = () => {
   const userData = {
     nombre: "Adrian Silva",
     edad: 24,
-    tipoPlan: "Clasica",
     objetivo: "Perder peso",
     kcalRestantes: 2441,
     pasos: 0,
@@ -31,7 +30,6 @@ export const MiPlan = () => {
           <h1 className="text-center">Mi Plan</h1>
           <div className="d-flex justify-content-center mb-3">
             <Button variant="outline-primary" className="mx-2">YO</Button>
-            <Button variant="outline-secondary" className="mx-2">AMIGOS</Button>
           </div>
         </Col>
       </Row>
@@ -44,7 +42,6 @@ export const MiPlan = () => {
               <Card.Title className="text-center">{userData.nombre}</Card.Title>
               <Card.Text className="text-center">
                 {userData.edad} años<br />
-                {userData.tipoPlan}<br />
                 {userData.objetivo}
               </Card.Text>
               <Row className="mt-3">
@@ -133,7 +130,6 @@ export const MiPlan = () => {
           <Button variant="link">Ayuno</Button>
           <Button variant="link">Recetas</Button>
           <Button variant="link" className="font-weight-bold">Perfil</Button>
-          <Button variant="link" className="text-danger">PRO</Button>
         </Col>
       </Row>
     </Container> 
