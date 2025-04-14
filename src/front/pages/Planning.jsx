@@ -51,7 +51,7 @@ export const Planning = () => {
   
     setResultados(recetasCoincidentes);
   };
-  const añadirReceta = (comida, receta) => {
+  const addRecipe = (comida, receta) => {
     setComidas(prev => ({
       ...prev,
       [comida]: [...prev[comida], receta]
@@ -60,7 +60,7 @@ export const Planning = () => {
     setResultados([]);
   };
 
-  const guardarDatos = () => {   // guarda en localStorage como JSON
+  const saveData = () => {   // guarda en localStorage como JSON
     localStorage.setItem('comidas', JSON.stringify(comidas));
     alert('¡Datos guardados correctamente!');
   };
@@ -87,7 +87,7 @@ export const Planning = () => {
                 <button
                   key={index}
                   className="btn btn-sm btn-outline-info me-2"
-                  onClick={() => añadirReceta(comida, receta)}
+                  onClick={() => addRecipe(comida, receta)}
                 >
                   {receta}
                 </button>
@@ -123,7 +123,7 @@ export const Planning = () => {
           ))}
         </tbody>
       </table>
-      <button className="btn btn-warning mt-3" onClick={guardarDatos}>
+      <button className="btn btn-warning mt-3" onClick={saveData}>
         Guardar información
       </button>
     </div>
