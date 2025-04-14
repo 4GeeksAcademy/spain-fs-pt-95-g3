@@ -11,9 +11,8 @@ export const Recetas = () => {
   
   const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 
-  const fetchRecetas = async (searchQuery = "", resetOffset = true) => {
-
-    if(resetOffset) setOffset(0);
+  const fetchRecetas = async (searchQuery = "") => {
+  
     setLoading(true);
     setError(null);
 
