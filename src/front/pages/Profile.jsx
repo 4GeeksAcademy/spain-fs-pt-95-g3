@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+const baseUrl = import.meta.env.VITE_API_URL;
 export const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState("");
@@ -14,8 +15,7 @@ export const Profile = () => {
       }
 
       try {
-        console.log(token)
-        const res = await fetch("https://laughing-waffle-x5vgqj4g9556hv95x-3001.app.github.dev/api/profile", {
+        const res = await fetch(`${baseUrl}/api/profile`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

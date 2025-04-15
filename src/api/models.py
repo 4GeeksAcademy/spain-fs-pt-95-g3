@@ -1,7 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Column, Integer, String, Float, Boolean
-from sqlalchemy.orm import declarative_base, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -15,9 +13,6 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(80), nullable=False, unique=True)
     birthdate = db.Column(db.Date, nullable=False)
-    objective = db.Column(db.String(50), nullable=True)
-    height = db.Column(db.Float, nullable=True)
-    weight = db.Column(db.Float, nullable=True)
     sex = db.Column(db.String(10), nullable=True)
 
     def set_password(self, password: str):
@@ -33,8 +28,28 @@ class User(db.Model):
             "username": self.username,
             "email": self.email,
             "birthdate": self.birthdate,
+            "sex": self.sex,
+        }
+    
+class UserGoal(db.Model):
+    __tablename__ = 'user_goal'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    height = db.Column(db.Float, nullable=True)
+    weight = db.Column(db.Float, nullable=True)
+    objective = db.Column(db.String(50), nullable=True)
+    date = db.Column(db.Date, nullable=False)  # fecha del nuevo objetivo
+
+    def serialize(self):
+
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
             "objective": self.objective,
             "height": self.height,
             "weight": self.weight,
-            "sex": self.sex,
+            "date": self.date,
         }
+
+    user = db.relationship('User', backref='goals')

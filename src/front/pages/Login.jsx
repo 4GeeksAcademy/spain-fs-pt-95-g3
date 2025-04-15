@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+const baseUrl = import.meta.env.VITE_API_URL;
 export const Login = () => {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -17,7 +18,7 @@ export const Login = () => {
 
     const handleLogin = async () => {
         try {
-            const res = await fetch("https://laughing-waffle-x5vgqj4g9556hv95x-3001.app.github.dev/api/login", {
+            const res = await fetch(`${baseUrl}/api/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
