@@ -1,52 +1,62 @@
-import React, { useEffect } from "react"
-import rigoImageUrl from "../assets/img/rigo-baby.jpg";
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import React from "react";
+import { Carousel, Button } from "react-bootstrap";
 
 export const Home = () => {
+  const foodCategories = [
+    {
+      name: "Desayuno",
+      image: "https://images.unsplash.com/photo-1550583724-b2692b85b150",
+      description: "Comienza tu día con energía"
+    },
+    {
+      name: "Almuerzo",
+      image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+      description: "Recetas sustanciosas para mediodía"
+    },
+    {
+      name: "Cena",
+      image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
+      description: "Platos ligeros para terminar el día"
+    },
+    {
+      name: "Vegano",
+      image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
+      description: "Delicias 100% vegetales"
+    },
+    {
+      name: "Vegetariano",
+      image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061",
+      description: "Sabores naturales y frescos"
+    }
+  ];
 
-	const { store, dispatch } = useGlobalReducer()
-
-	const loadMessage = async () => {
-		try {
-			const backendUrl = import.meta.env.VITE_BACKEND_URL
-
-			if (!backendUrl) throw new Error("VITE_BACKEND_URL is not defined in .env file")
-
-			const response = await fetch(backendUrl + "/api/hello")
-			const data = await response.json()
-
-			if (response.ok) dispatch({ type: "set_hello", payload: data.message })
-
-			return data
-
-		} catch (error) {
-			if (error.message) throw new Error(
-				`Could not fetch the message from the backend.
-				Please check if the backend is running and the backend port is public.`
-			);
-		}
-
-	}
-
-	useEffect(() => {
-		loadMessage()
-	}, [])
-
-	return (
-		<div className="text-center mt-5">
-			<h1 className="display-4">Hello Rigo!!</h1>
-			<p className="lead">
-				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
-			</p>
-			<div className="alert alert-info">
-				{store.message ? (
-					<span>{store.message}</span>
-				) : (
-					<span className="text-danger">
-						Loading message from the backend (make sure your python 🐍 backend is running)...
-					</span>
-				)}
-			</div>
-		</div>
-	);
-}; 
+  return (
+    <div className="container">
+        <h1 className="display-4 fw-bold mb-4 text-center py-3 text-info" style={{
+            textShadow: "1px 1px 2px rgba(0,0,0,0.1)"
+          }}>
+            Bienvenidos a Que, Como y Cuando
+          </h1>
+      <Carousel interval={3000} pause={false}>
+        {foodCategories.map((category, index) => (
+          <Carousel.Item key={index}>
+            <div style={{ height: "300px", overflow: "hidden"}}>
+              
+              <img
+                className="d-block w-100 h-100"
+                src={category.image}
+                alt={category.name}
+                style={{ objectFit: "cover", borderRadius: "10px" }}
+              />                          
+            </div>
+            <Carousel.Caption style={{ background: "rgba(0,0,0,0.5)", borderRadius: "10px" }}>
+              <h3>{category.name}</h3>
+              <p>{category.description}</p>
+              <Button variant="light">Ver recetas</Button>
+            </Carousel.Caption>
+          </Carousel.Item>
+        ))}
+      </Carousel>
+    </div>
+  );
+};
