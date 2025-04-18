@@ -3,7 +3,7 @@ from api.models import db, User, UserGoal
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from datetime import timedelta  
+from datetime import timedelta, datetime
 
 api = Blueprint('api', __name__)
 CORS(api)
@@ -26,17 +26,27 @@ def register():
             password=data['password'],
             email=data['email'],
             birthdate=data['birthdate'],
+            sex=data['sex']
+        )
+        new_user.set_password(data['password']) 
+
+        db.session.add(new_user)
+        db.session.flush()  
+
+        new_goal = UserGoal(
+            user_id=new_user.id,
             objective=data['objective'],
             height=data['height'],
             weight=data['weight'],
-            sex=data['sex']
         )
-        db.session.add(new_user)
+        db.session.add(new_goal)
+
         db.session.commit()
-        return jsonify({"message": "Usuario registrado con éxito"}), 201
+        return jsonify({"message": "Usuario y objetivo registrados con éxito"}), 201
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({"Parece que algo salió mal": str(e)}), 500
+        return jsonify({"error": "Parece que algo salió mal", "details": str(e)}), 500
 
 @api.route('/login', methods=['POST'])
 def login():

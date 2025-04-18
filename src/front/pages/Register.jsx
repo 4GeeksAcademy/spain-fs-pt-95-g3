@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { UserContext } from "../Context/UserContext";
 import { useNavigate } from "react-router-dom";
 
+const KG_IN_POUND = 2.20462;
 const baseUrl = import.meta.env.VITE_API_URL;
 export const Register = () => {
   const [step, setStep] = useState(1);
@@ -39,33 +40,31 @@ export const Register = () => {
     let newWeight = weight;
 
     if (newUnit === "lb" && unit === "kg") {
-      newWeight = (weight * 2.20462).toFixed(2);  // Kg a libras redondeando 2 decimales
-      
+      newWeight = (weight * KG_IN_POUND).toFixed(2);
     } else if (newUnit === "kg" && unit === "lb") {
-      newWeight = (weight / 2.20462).toFixed(2);  // Libras a kg
+      newWeight = (weight / KG_IN_POUND).toFixed(2);
     }
-  
+
     setUnit(newUnit);
     setWeight(newWeight);
-  };  
+  };
 
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
   const handleRegister = async () => {
-
+    
     const userData = {
-      username: escapeJsonString(formData.name), 
-      password: escapeJsonString(formData.password),
-      email: escapeJsonString(formData.email),
-      birthdate: escapeJsonString(formData.birthdate),
-      objective: escapeJsonString(formData.objective),
+      username: formData.name, 
+      password: formData.password,
+      email: formData.email,
+      birthdate: formData.birthdate,
+      objective: formData.objective,
       height: formData.height,
       sex: formData.sex,  
       weight: weight,         
       unit: unit
     };
-   
     try {
       const response = await fetch(`${baseUrl}/api/register`, {
         method: "POST",
@@ -86,7 +85,7 @@ export const Register = () => {
         setWeight(weight);        
         setUnit(unit);           
 
-        navigate("/profile");
+        navigate("/login");
 
       } else {
         alert(`Error: ${data.error || data.message}`);
