@@ -23,12 +23,12 @@ def register():
     try:
         new_user = User(
             username=data['username'],
-            password=data['password'],
             email=data['email'],
             birthdate=data['birthdate'],
             sex=data['sex']
         )
-        new_user.set_password(data['password']) 
+
+        new_user.set_password(data['password'])  
 
         db.session.add(new_user)
         db.session.flush()  
@@ -57,13 +57,13 @@ def login():
     if not email or not password:
         return jsonify({"error": "Email y contraseña son obligatorios"}), 400
 
-    user = User.query.filter_by(email=email, password=password).first()
+    user = User.query.filter_by(email=email).first()
 
-    if not user:
+    if not user or not user.check_password(password):
         return jsonify({"error": "Credenciales inválidas"}), 401
 
     access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(days=1)) 
- # meter en str cuando pongamos datos
+
     return jsonify({
         "access_token": access_token,
         "user_id": user.id,
