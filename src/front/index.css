@@ -1,4 +1,5 @@
 /* Efecto hover suave */
+
 .navbar-brand:hover img {
     opacity: 0.9;
     transform: scale(1.05);
@@ -36,7 +37,6 @@
 .user-dropdown .dropdown-item:hover {
   background-color: #f8f9fa;
 }
-
 .receta-card {
   transition: all 0.3s ease;
 }

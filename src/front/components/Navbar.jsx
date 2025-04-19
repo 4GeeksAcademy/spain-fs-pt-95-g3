@@ -23,8 +23,8 @@ const NavbarProject = () => {
 						e.target.src = "https://via.placeholder.com/40";
 					 }}
 					 />
-				<span className="fw-bold text-dark fs-4 ">
-					Que, Como y Cuando
+				<span className="fw-bold text-dark fs-4">
+					Qué, Como y Cuándo
 				</span>	
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -34,10 +34,10 @@ const NavbarProject = () => {
 						<Nav.Link as={Link} to="/" className="mx-2">
 						Página Principal
 						</Nav.Link>
-						<Nav.Link as={Link} to="/recetas" className="mx-2">
+						<Nav.Link as={Link} to="/recipes" className="mx-2">
 						Recetas
 						</Nav.Link>
-						<Nav.Link as={Link} to="/planificador" className="mx-2">
+						<Nav.Link as={Link} to="/planning" className="mx-2">
 						Mi Plan
 						</Nav.Link>
 					</Nav>
@@ -59,6 +59,14 @@ const NavbarProject = () => {
 						align="end"
 						className="user-dropdown"
 					>
+						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
+						Hola "insertar nombre"
+						</NavDropdown.Item>
+						<p><a href="#" class="link-underline-info  m-3">Salir</a></p>
+						<hr class="dropdown-divider m-0"></hr>
+						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
+						Perfil
+						</NavDropdown.Item>
 						<NavDropdown.Item as={Link} to="/login" className="text-dark">
 						Iniciar Sesión
 						</NavDropdown.Item>
@@ -69,7 +77,9 @@ const NavbarProject = () => {
 						Perfil
 						</NavDropdown.Item>
 					</NavDropdown>
+					<Nav as={Link} to="/favorites" className="text-secondary"><i href="" class="fi fi-rs-heart m-2 fs-3"></i></Nav>
 				</Navbar.Collapse>
+				
 			</Container>
 		</Navbar>
 	);
