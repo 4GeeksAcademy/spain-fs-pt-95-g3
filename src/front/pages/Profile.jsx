@@ -59,7 +59,6 @@ export const Profile = () => {
         });
 
         const data = await res.json();
-        console.log(data);
         if (res.ok) {
           setUserData(data);
         } else {
@@ -81,9 +80,9 @@ export const Profile = () => {
         {/*Header*/}
         <Row className="mb-4">
           <Col>
-            <h1 className="text-center">Mi Plan</h1>
+            <h1 className="text-center">Perfil</h1>
             <div className="d-flex justify-content-center mb-3">
-              <Button variant="outline-primary" className="mx-2">YO</Button>
+              <Button variant="outline-info" className="mx-2">Editar</Button>
             </div>
           </Col>
         </Row>
@@ -127,7 +126,6 @@ export const Profile = () => {
                     <li><strong>Grasas:</strong> {userData.grasas} g</li>
                     <li><strong>Carbohidratos:</strong> {userData.carbohidratos} g</li>
                   </ul>
-                <Button variant="outline-info" block>EDITAR</Button>
               </Card.Body>
             </Card>
           </Col>
@@ -141,7 +139,7 @@ export const Profile = () => {
                 <Card.Title className="text-center">Mi progreso</Card.Title>
                 <div className="text-center m-3">
                   <FaTrophy size={32} className="text-warning" />
-                  <h4 className="mt-2">¡Has perdido {datos.pesoInicial - datos.pesoActual} Kg!</h4>
+                  <h4 className="mt-2">¡Has perdido {userData.weight - datos.pesoActual} Kg!</h4>
                   <p>¡Enhorabuena! ¡Has alcanzado tu objetivo! 😊</p>
                 </div>
                 <div className="text-center">
@@ -151,9 +149,9 @@ export const Profile = () => {
                   label={`${((datos.pesoInicial - datos.pesoActual) / datos.pesoInicial *100).toFixed(1)}%`}
                   variant="success"
                   className="mb-3"/>
-                  <p>{datos.pesoInicial} Kg</p>
+                  <p>{userData.weight} Kg</p>
                 </div>
-                <Button variant="outline-secondary" block>ANÁLISIS</Button>
+                <Button variant="outline-secondary">ANÁLISIS</Button>
               </Card.Body>
             </Card>
           </Col>
@@ -189,13 +187,9 @@ export const Profile = () => {
         </Row>
 
         <div className="p-4">
-      <h1 className="text-xl font-bold">Perfil</h1>
-      <p><strong>Nombre:</strong> {userData.username}</p>
-      <p><strong>Correo:</strong> {userData.email}</p>
-      <p><strong>Fecha de nacimiento:</strong> {userData.birthdate}</p>
-      <p><strong>Altura:</strong> {userData.height} cm</p>
-      <p><strong>Peso:</strong> {userData.weight} kg</p>
-    </div>
+          <p><strong>Fecha de nacimiento:</strong> {userData.birthdate}</p>
+          <p><strong>Altura:</strong> {userData.height} cm</p>
+        </div>
 
       </Container> 
       

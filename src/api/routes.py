@@ -80,9 +80,9 @@ def calculate_nutrition(user, user_goal):
     peso = user_goal.weight
     altura = user_goal.height
     sexo = user.sex.lower()
-    objetivo = user_goal.objective.lower()
+    objetivo = user_goal.objective.lower()  # .lower para convertir a minúsculas
 
-    # TMB (Mifflin-St Jeor)
+    # TMB
     if sexo == 'hombre':
         tmb = 10 * peso + 6.25 * altura - 5 * edad + 5
     else:
@@ -91,15 +91,15 @@ def calculate_nutrition(user, user_goal):
     # Multiplicador de actividad (fijo por ahora)
     tdee = tmb * 1.55  # actividad moderada
 
-    # Ajuste según objetivo
-    if objetivo == 'perder':
+    # según objetivo
+    if objetivo == 'perder peso':
         calorias = tdee - 500
-    elif objetivo == 'ganar':
+    elif objetivo == 'ganar peso':
         calorias = tdee + 300
     else:
         calorias = tdee
 
-    # Macronutrientes en gramos (aproximado)
+    # Macronutrientes en gramos
     proteinas = peso * 2  # 2g por kg
     grasas = peso * 1     # 1g por kg
     carbos = (calorias - (proteinas * 4 + grasas * 9)) / 4

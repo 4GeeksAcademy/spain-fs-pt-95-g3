@@ -22,7 +22,7 @@ const NavbarProject = () => {
 					maxHeight:"200%",
 					objectFit:"contain"
 					}}
-					classname="me-2"
+					className="me-2"
 					onError={(e) =>{ e.target.onerror = null;
 						e.target.src = "https://via.placeholder.com/40";
 					 }}
@@ -69,7 +69,7 @@ const NavbarProject = () => {
 						<NavDropdown.Item as={Link} to="/register" onClick={handleLogout} className="text-danger">
 						Salir
 						</NavDropdown.Item>
-						<hr class="dropdown-divider m-0"></hr>
+						<hr className="dropdown-divider m-0"></hr>
 						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
 						Perfil
 						</NavDropdown.Item>
@@ -80,7 +80,7 @@ const NavbarProject = () => {
 						Registrarse
 						</NavDropdown.Item>
 					</NavDropdown>
-					<Nav as={Link} to="/favorites" className="text-secondary"><i href="" class="fi fi-rs-heart m-2 fs-3"></i></Nav>
+					<Nav as={Link} to="/favorites" className="text-secondary"><i href="" className="fi fi-rs-heart m-2 fs-3"></i></Nav>
 				</Navbar.Collapse>
 				
 			</Container>
