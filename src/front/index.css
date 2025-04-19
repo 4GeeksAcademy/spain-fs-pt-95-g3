@@ -1,0 +1,76 @@
+/* Efecto hover suave */
+.navbar-brand:hover img {
+    opacity: 0.9;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+  }
+  
+  /* Sombra para mejor contraste */
+  .navbar-brand img {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+
+/* Estilos para el menú desplegable */
+.user-dropdown .dropdown-toggle {
+  background: transparent !important;
+  border: none;
+  box-shadow: none !important;
+  padding: 8px 12px;
+}
+
+.user-dropdown .dropdown-toggle::after {
+  display: none; /* Oculta la flecha del dropdown */
+}
+
+.user-dropdown .dropdown-menu {
+  border-radius: 8px;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.user-dropdown .dropdown-item {
+  padding: 8px 16px;
+  transition: all 0.2s;
+}
+
+.user-dropdown .dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.receta-card {
+  transition: all 0.3s ease;
+}
+
+.receta-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.btn-receta {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  transition: all 0.3s;
+}
+
+.btn-receta:hover {
+  background-color: #c0392b;
+  transform: scale(1.05);
+}
+
+body {
+  background-color: rgba(248, 249, 250, 0.7);
+  background-image: url('https://img.freepik.com/fotos-premium/envase-vegetales-aislados-sobre-fondo-blanco-alimentos-ia-generativa_74760-26355.jpg?w=740');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: soft-light;
+}
+
+/* Mi Plan */
+.card {
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
