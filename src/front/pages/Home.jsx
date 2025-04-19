@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react"
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Carousel, Button } from "react-bootstrap";
 
 export const Home = () => {
@@ -60,3 +61,4 @@ export const Home = () => {
     </div>
   );
 };
+
