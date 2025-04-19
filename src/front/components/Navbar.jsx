@@ -6,8 +6,8 @@ import { FaUser } from "react-icons/fa";
 const NavbarProject = () => {
 	const logoUrl = "https://i.imgur.com/CckqetR.png";
 	return (
-		<Navbar bg="light" expand="lg" sticky="top">
-			<Container>
+		<Navbar bg="light" expand="lg" sticky="top" className="shadow">
+			<Container className="rounded">
 				{/*Logo y titulo*/}
 				<Navbar.Brand as={Link} to="/" className="d-flex align-items-center" style={{height:"60px"}}>
 					<img src={logoUrl}
@@ -30,7 +30,7 @@ const NavbarProject = () => {
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar-nav">
 					{/*menu de navegacion*/}
-					<Nav classname="me-auto">
+					<Nav className="me-auto">
 						<Nav.Link as={Link} to="/" className="mx-2">
 						Página Principal
 						</Nav.Link>
@@ -72,6 +72,9 @@ const NavbarProject = () => {
 						</NavDropdown.Item>
 						<NavDropdown.Item as={Link} to="/register" className="text-dark">
 						Registrarse
+						</NavDropdown.Item>
+						<NavDropdown.Item as={Link} to="/register" className="text-dark">
+						Perfil
 						</NavDropdown.Item>
 					</NavDropdown>
 					<Nav as={Link} to="/favorites" className="text-secondary"><i href="" class="fi fi-rs-heart m-2 fs-3"></i></Nav>

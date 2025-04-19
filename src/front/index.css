@@ -37,3 +37,40 @@
 .user-dropdown .dropdown-item:hover {
   background-color: #f8f9fa;
 }
+.receta-card {
+  transition: all 0.3s ease;
+}
+
+.receta-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.btn-receta {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  transition: all 0.3s;
+}
+
+.btn-receta:hover {
+  background-color: #c0392b;
+  transform: scale(1.05);
+}
+
+body {
+  background-color: rgba(248, 249, 250, 0.7);
+  background-image: url('https://img.freepik.com/fotos-premium/envase-vegetales-aislados-sobre-fondo-blanco-alimentos-ia-generativa_74760-26355.jpg?w=740');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: soft-light;
+}
+
+/* Mi Plan */
+.card {
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
