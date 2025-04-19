@@ -3,7 +3,7 @@ from api.models import db, User, UserGoal
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 
 api = Blueprint('api', __name__)
 CORS(api)
@@ -70,16 +70,66 @@ def login():
         "username": user.username
     }), 200
 
+
+def calculate_age(birthdate):
+    today = date.today()
+    return today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+def calculate_nutrition(user, user_goal):
+    edad = calculate_age(user.birthdate)
+    peso = user_goal.weight
+    altura = user_goal.height
+    sexo = user.sex.lower()
+    objetivo = user_goal.objective.lower()
+
+    # TMB (Mifflin-St Jeor)
+    if sexo == 'hombre':
+        tmb = 10 * peso + 6.25 * altura - 5 * edad + 5
+    else:
+        tmb = 10 * peso + 6.25 * altura - 5 * edad - 161
+
+    # Multiplicador de actividad (fijo por ahora)
+    tdee = tmb * 1.55  # actividad moderada
+
+    # Ajuste según objetivo
+    if objetivo == 'perder':
+        calorias = tdee - 500
+    elif objetivo == 'ganar':
+        calorias = tdee + 300
+    else:
+        calorias = tdee
+
+    # Macronutrientes en gramos (aproximado)
+    proteinas = peso * 2  # 2g por kg
+    grasas = peso * 1     # 1g por kg
+    carbos = (calorias - (proteinas * 4 + grasas * 9)) / 4
+
+    return {
+        "calorias": round(calorias),
+        "proteinas": round(proteinas),
+        "grasas": round(grasas),
+        "carbohidratos": round(carbos)
+    }
 @api.route('/profile', methods=['GET'])
 @jwt_required()
 def profile():
     user_id = get_jwt_identity()
 
     user = User.query.get(user_id)
-    user_goal = UserGoal.query.filter(UserGoal.user_id == user_id).first()  # ← aquí añadimos .first()
+    user_goal = UserGoal.query.filter(UserGoal.user_id == user_id).first()
 
     if not user:
         return jsonify({"error": "Usuario no encontrado"}), 404
+
+    if user_goal:
+        nutricion = calculate_nutrition(user, user_goal)
+    else:
+        nutricion = {
+            "calorias": None,
+            "proteinas": None,
+            "grasas": None,
+            "carbohidratos": None
+        }
 
     return jsonify({
         "id": user.id,
@@ -89,6 +139,10 @@ def profile():
         "objective": user_goal.objective if user_goal else None,
         "height": user_goal.height if user_goal else None,
         "weight": user_goal.weight if user_goal else None,
-        "sex": user.sex
+        "sex": user.sex,
+        "calorias_diarias": nutricion["calorias"],
+        "proteinas": nutricion["proteinas"],
+        "grasas": nutricion["grasas"],
+        "carbohidratos": nutricion["carbohidratos"]
     }), 200
 

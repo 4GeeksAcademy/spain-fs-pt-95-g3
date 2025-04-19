@@ -25,16 +25,11 @@ const baseUrl = import.meta.env.VITE_API_URL;
 export const Profile = () => {
 
   const datos = {
-    nombre: "Adrian Silva",
-    edad: 24,
-    objetivo: "Perder peso",
-    kcalRestantes: 2441,
     pasos: 0,
     pesoActual: 85.0,
     pesoInicial: 87.0,
     objetivos: {
       alimentacion: "Estandar",
-      caloriasDiarias: 2441,
       pasosDiarios: 10000
     },
     retos: [
@@ -108,7 +103,7 @@ export const Profile = () => {
                     <div className="d-flex flex-column align-items-center">
                       <FaFire size={24} className="text-danger mb-2" />
                       <strong>Kcal restantes</strong>
-                      <span>{datos.kcalRestantes}</span>
+                      <span>{userData.calorias_diarias}</span>
                     </div>
                   </Col>
                   <Col xs={6} className="text-center">
@@ -126,11 +121,12 @@ export const Profile = () => {
             <Card className="h-100 shadow-sm">
               <Card.Body>
                 <Card.Title className="text-center">Mis objetivos</Card.Title>
-                <ul className="list-unstyled">
-                  <li className="mb-2"><strong>Objetivo:</strong> {userData.objective}</li>
-                  <li className="mb-2">Calorias: {datos.objetivos.caloriasDiarias}</li>
-                  <li className="mb-2">Pasos: {datos.objetivos.pasosDiarios}</li>
-                </ul>
+                  <ul className="list-unstyled text-center">
+                    <li><strong>Calorías:</strong> {userData.calorias_diarias} kcal</li>
+                    <li><strong>Proteínas:</strong> {userData.proteinas} g</li>
+                    <li><strong>Grasas:</strong> {userData.grasas} g</li>
+                    <li><strong>Carbohidratos:</strong> {userData.carbohidratos} g</li>
+                  </ul>
                 <Button variant="outline-info" block>EDITAR</Button>
               </Card.Body>
             </Card>
@@ -197,8 +193,6 @@ export const Profile = () => {
       <p><strong>Nombre:</strong> {userData.username}</p>
       <p><strong>Correo:</strong> {userData.email}</p>
       <p><strong>Fecha de nacimiento:</strong> {userData.birthdate}</p>
-      <p><strong>Sexo Biológico:</strong> {userData.sex}</p>
-      <p><strong>Objetivo:</strong> {userData.objective}</p>
       <p><strong>Altura:</strong> {userData.height} cm</p>
       <p><strong>Peso:</strong> {userData.weight} kg</p>
     </div>

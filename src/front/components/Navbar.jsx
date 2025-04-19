@@ -5,6 +5,10 @@ import { FaUser } from "react-icons/fa";
 
 const NavbarProject = () => {
 	const logoUrl = "https://i.imgur.com/CckqetR.png";
+	const handleLogout = () => {
+		localStorage.removeItem("access_token");
+		navigate("/register");                    
+	  };
 	return (
 		<Navbar bg="light" expand="lg" sticky="top" className="shadow">
 			<Container className="rounded">
@@ -62,7 +66,9 @@ const NavbarProject = () => {
 						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
 						Hola "insertar nombre"
 						</NavDropdown.Item>
-						<p><a href="#" class="link-underline-info  m-3">Salir</a></p>
+						<NavDropdown.Item as={Link} to="/register" onClick={handleLogout} className="text-danger">
+						Salir
+						</NavDropdown.Item>
 						<hr class="dropdown-divider m-0"></hr>
 						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
 						Perfil
