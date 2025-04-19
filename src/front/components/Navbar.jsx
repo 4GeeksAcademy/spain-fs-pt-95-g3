@@ -73,9 +73,6 @@ const NavbarProject = () => {
 						<NavDropdown.Item as={Link} to="/register" className="text-dark">
 						Registrarse
 						</NavDropdown.Item>
-						<NavDropdown.Item as={Link} to="/register" className="text-dark">
-						Perfil
-						</NavDropdown.Item>
 					</NavDropdown>
 					<Nav as={Link} to="/favorites" className="text-secondary"><i href="" class="fi fi-rs-heart m-2 fs-3"></i></Nav>
 				</Navbar.Collapse>
