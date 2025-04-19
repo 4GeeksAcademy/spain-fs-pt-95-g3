@@ -76,7 +76,7 @@ def profile():
     user_id = get_jwt_identity()
 
     user = User.query.get(user_id)
-    user_goal = UserGoal.query.filter(UserGoal.user_id==user_id)  #buscar info filter
+    user_goal = UserGoal.query.filter(UserGoal.user_id == user_id).first()  # ← aquí añadimos .first()
 
     if not user:
         return jsonify({"error": "Usuario no encontrado"}), 404
@@ -86,8 +86,9 @@ def profile():
         "username": user.username,
         "email": user.email,
         "birthdate": user.birthdate,
-        "objective": user_goal.objective,
-        "height": user_goal.height,
-        "weight": user_goal.weight,
+        "objective": user_goal.objective if user_goal else None,
+        "height": user_goal.height if user_goal else None,
+        "weight": user_goal.weight if user_goal else None,
         "sex": user.sex
     }), 200
+
