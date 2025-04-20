@@ -38,6 +38,7 @@ export const router = createBrowserRouter(
         <Route path= "/favorites" element={<Favorites />} />
         <Route path= "/recipes" element={<Recipes />} />
         <Route path= "/planning" element={<Planning />} />
+        <Route path= "/recipefocus" element={<DetallReceta />} />
       </Route>
     )
 );

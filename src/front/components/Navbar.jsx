@@ -5,6 +5,10 @@ import { FaUser } from "react-icons/fa";
 
 const NavbarProject = () => {
 	const logoUrl = "https://i.imgur.com/CckqetR.png";
+	const handleLogout = () => {
+		localStorage.removeItem("access_token");
+		navigate("/register");                    
+	  };
 	return (
 		<Navbar bg="light" expand="lg" sticky="top" className="shadow">
 			<Container className="rounded">
@@ -18,7 +22,7 @@ const NavbarProject = () => {
 					maxHeight:"200%",
 					objectFit:"contain"
 					}}
-					classname="me-2"
+					className="me-2"
 					onError={(e) =>{ e.target.onerror = null;
 						e.target.src = "https://via.placeholder.com/40";
 					 }}
@@ -62,8 +66,10 @@ const NavbarProject = () => {
 						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
 						Hola "insertar nombre"
 						</NavDropdown.Item>
-						<p><a href="#" class="link-underline-info  m-3">Salir</a></p>
-						<hr class="dropdown-divider m-0"></hr>
+						<NavDropdown.Item as={Link} to="/register" onClick={handleLogout} className="text-danger">
+						Salir
+						</NavDropdown.Item>
+						<hr className="dropdown-divider m-0"></hr>
 						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
 						Perfil
 						</NavDropdown.Item>
@@ -73,11 +79,8 @@ const NavbarProject = () => {
 						<NavDropdown.Item as={Link} to="/register" className="text-dark">
 						Registrarse
 						</NavDropdown.Item>
-						<NavDropdown.Item as={Link} to="/register" className="text-dark">
-						Perfil
-						</NavDropdown.Item>
 					</NavDropdown>
-					<Nav as={Link} to="/favorites" className="text-secondary"><i href="" class="fi fi-rs-heart m-2 fs-3"></i></Nav>
+					<Nav as={Link} to="/favorites" className="text-secondary"><i href="" className="fi fi-rs-heart m-2 fs-3"></i></Nav>
 				</Navbar.Collapse>
 				
 			</Container>
