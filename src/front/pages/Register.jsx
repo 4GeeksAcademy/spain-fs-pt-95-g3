@@ -101,7 +101,7 @@ export const Register = () => {
     <div className="p-4 border">
       {step === 1 && (
         <div className="d-flex flex-column align-items-center text-center">
-          <h2>Te damos la bienvenida a Qué, Como y Cuándo</h2>
+          <h2>Te damos la bienvenida a Qué, Como y Cuánto</h2>
           <p className="w-75">Donde podrás encontrar solución a todas las 
             cuestiones que puedas tener para llevar una buena alimentación y completamente personalizada.</p>
           <input
