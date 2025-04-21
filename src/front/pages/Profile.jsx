@@ -78,10 +78,10 @@ export const Profile = () => {
     if (isNaN(peso)) return;
   
     const token = localStorage.getItem("access_token");
-    const unidad = localStorage.getItem("unit") || "kg"; // usa la unidad que guardaste
+    const unidad = localStorage.getItem("unit") || "kg"; // unidad guardada
   
     try {
-      const res = await fetch(`${baseUrl}/api/profile/weight`, {
+      const res = await fetch(`${baseUrl}/api/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -98,7 +98,7 @@ export const Profile = () => {
     localStorage.setItem("pesoActual", peso.toString());
     localStorage.setItem("widgetAdded", "true");
     setWidgetAdded(true);
-    setShowInputt(false);
+    setShowInput(false);
     setNewWeight("");
   };
 
@@ -167,11 +167,11 @@ export const Profile = () => {
           className="w-100 mb-4 p-4 fs-4"
           onClick={() => setShowInput(true)}
         >
-          Añadir widget
+          Añadir widget de pérdida de peso
         </Button>
       )}
 
-      {showInput && !widgetAdded && (
+      {showInput && (
         <Row className="mb-4">
           <Col>
             <Card className="shadow-sm">
@@ -184,7 +184,7 @@ export const Profile = () => {
                   value={newWeight}
                   onChange={(e) => setNewWeight(e.target.value)}
                 />GuardarPeso
-                <Button onClick={handleSavingWeight} className="w-100">
+                <Button onClick={handleSavingWeight} className="w-100 btn-info text-white">
                   Guardar peso
                 </Button>
               </Card.Body>
@@ -214,6 +214,9 @@ export const Profile = () => {
                       variant="warning" className="mb-3"/>
                   <p>{userData.weight} Kg</p>
                 </div>
+                <Button variant="outline-secondary" onClick={() => setShowInput(true)}>
+                  Actualizar peso
+                </Button>
               </Card.Body>
             </Card>
           </Col>
