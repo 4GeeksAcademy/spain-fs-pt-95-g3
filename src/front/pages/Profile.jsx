@@ -26,30 +26,23 @@ const baseUrl = import.meta.env.VITE_API_URL;
 export const Profile = () => {
   const datos = {
     pasos: 0,
-    pesoActual: 85.0,
-    pesoInicial: 87.0,
-    objetivos: { alimentacion: "Estandar", pasosDiarios: 10000 },
     retos: [
       { nombre: "Dejar el chocolate", completado: false },
       { nombre: "Dejar el azúcar", completado: false }
     ]
   };
 
-  // Widget and weight state
-  const [mostrarInput, setMostrarInput] = useState(false);
+  const [showInput, setShowInput] = useState(false);
   const [widgetAdded, setWidgetAdded] = useState(
-    () => localStorage.getItem("widgetAdded") === "true"
+    () => localStorage.getItem("widgetAdded") === "true");
+  const [actualWeight, setActualWeight] = useState(
+    () => parseFloat(localStorage.getItem("pesoActual")) || datos.actualWeight
   );
-  const [pesoActual, setPesoActual] = useState(
-    () => parseFloat(localStorage.getItem("pesoActual")) || datos.pesoActual
-  );
-  const [nuevoPeso, setNuevoPeso] = useState("");
+  const [newWeight, setNewWeight] = useState("");
 
-  // User data state
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState("");
 
-  // Fetch profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("access_token");
@@ -79,32 +72,34 @@ export const Profile = () => {
   if (error) return <p>{error}</p>;
   if (!userData) return <p>Cargando perfil...</p>;
 
-  // Handle saving weight
-  const handleGuardarPeso = async () => {
-    const peso = parseFloat(nuevoPeso);
+  // GuardarPeso
+  const handleSavingWeight = async () => {
+    const peso = parseFloat(newWeight);
     if (isNaN(peso)) return;
-
+  
     const token = localStorage.getItem("access_token");
+    const unidad = localStorage.getItem("unit") || "kg"; // unidad guardada
+  
     try {
-      const res = await fetch(`${baseUrl}/api/profile/weight`, {
+      const res = await fetch(`${baseUrl}/api/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ weight: peso })
+        body: JSON.stringify({ weight: peso, unit: unidad })
       });
       if (!res.ok) console.error("Error actualizando peso en servidor");
     } catch (err) {
       console.error(err);
     }
-
-    setPesoActual(peso);
+  
+    setActualWeight(peso);
     localStorage.setItem("pesoActual", peso.toString());
     localStorage.setItem("widgetAdded", "true");
     setWidgetAdded(true);
-    setMostrarInput(false);
-    setNuevoPeso("");
+    setShowInput(false);
+    setNewWeight("");
   };
 
   return (
@@ -121,7 +116,7 @@ export const Profile = () => {
         </Col>
       </Row>
 
-      {/* Profile Info */}
+      {/* info del perfil */}
       <Row className="mb-4">
         <Col md={6}>
           <Card className="h-100 shadow-sm">
@@ -165,18 +160,18 @@ export const Profile = () => {
         </Col>
       </Row>
 
-      {/* Widget: Add, Input, Progress */}
-      {!widgetAdded && !mostrarInput && (
+      {/* Widget */}
+      {!widgetAdded && !showInput && (
         <Button
           variant="primary"
           className="w-100 mb-4 p-4 fs-4"
-          onClick={() => setMostrarInput(true)}
+          onClick={() => setShowInput(true)}
         >
-          Añadir widget
+          Añadir widget de pérdida de peso
         </Button>
       )}
 
-      {mostrarInput && !widgetAdded && (
+      {showInput && (
         <Row className="mb-4">
           <Col>
             <Card className="shadow-sm">
@@ -186,10 +181,10 @@ export const Profile = () => {
                   type="number"
                   placeholder="Introduce tu peso"
                   className="mb-2"
-                  value={nuevoPeso}
-                  onChange={(e) => setNuevoPeso(e.target.value)}
-                />
-                <Button onClick={handleGuardarPeso} className="w-100">
+                  value={newWeight}
+                  onChange={(e) => setNewWeight(e.target.value)}
+                />GuardarPeso
+                <Button onClick={handleSavingWeight} className="w-100 btn-info text-white">
                   Guardar peso
                 </Button>
               </Card.Body>
@@ -207,23 +202,21 @@ export const Profile = () => {
                 <div className="text-center m-3">
                   <FaTrophy size={32} className="text-warning" />
                   <h4 className="mt-2">
-                    ¡Has perdido {Math.abs(userData.weight - pesoActual).toFixed(1)} Kg!
+                    ¡Has perdido {Math.abs(userData.weight - actualWeight).toFixed(1)} Kg!
                   </h4>
-                  <p>¡Enhorabuena! ¡Has alcanzado tu objetivo! 😊</p>
+                  <p>¡Enhorabuena! ¡Vas por muy buen camino! 😊</p>
                 </div>
                 <div className="text-center">
-                  <h5>{pesoActual} Kg</h5>
-                  <ProgressBar
-                    now={(pesoActual / userData.weight) * 100}
+                  <h5>{actualWeight} Kg</h5>
+                  <ProgressBar now={(actualWeight / userData.weight) * 100}
                     label={`${(
-                      ((userData.weight - pesoActual) / userData.weight) *
-                      100
-                    ).toFixed(1)}%`}
-                    variant="success"
-                    className="mb-3"
-                  />
+                      ((userData.weight - actualWeight) / userData.weight) * 100).toFixed(1)}%`}
+                      variant="warning" className="mb-3"/>
                   <p>{userData.weight} Kg</p>
                 </div>
+                <Button variant="outline-secondary" onClick={() => setShowInput(true)}>
+                  Actualizar peso
+                </Button>
               </Card.Body>
             </Card>
           </Col>
@@ -248,21 +241,6 @@ export const Profile = () => {
             </Card>
           </Col>
         </Row>
-  
-        {/*Menu inferior*/}
-        <Row className="fixed-bottom bg-white p-2 border-top">
-          <Col className="d-flex justify-content-around">
-            <Button variant="link">Diario</Button>
-            <Button variant="link">Ayuno</Button>
-            <Button variant="link">Recetas</Button>
-            <Button variant="link" className="font-weight-bold">Perfil</Button>
-          </Col>
-        </Row>
-
-        <div className="p-4">
-          <p><strong>Fecha de nacimiento:</strong> {userData.birthdate}</p>
-          <p><strong>Altura:</strong> {userData.height} cm</p>
-        </div>
     </Container>
   );
 };

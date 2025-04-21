@@ -110,39 +110,57 @@ def calculate_nutrition(user, user_goal):
         "grasas": round(grasas),
         "carbohidratos": round(carbos)
     }
-@api.route('/profile', methods=['GET'])
+
+@api.route('/profile', methods=['GET', 'PUT'])
 @jwt_required()
 def profile():
     user_id = get_jwt_identity()
-
     user = User.query.get(user_id)
-    user_goal = UserGoal.query.filter(UserGoal.user_id == user_id).first()
+    user_goal = UserGoal.query.filter_by(user_id=user_id).first()
 
     if not user:
         return jsonify({"error": "Usuario no encontrado"}), 404
 
-    if user_goal:
-        nutricion = calculate_nutrition(user, user_goal)
-    else:
-        nutricion = {
-            "calorias": None,
-            "proteinas": None,
-            "grasas": None,
-            "carbohidratos": None
-        }
+    if request.method == 'GET':
+        if user_goal:
+            nutricion = calculate_nutrition(user, user_goal)
+        else:
+            nutricion = {
+                "calorias": None,
+                "proteinas": None,
+                "grasas": None,
+                "carbohidratos": None
+            }
 
-    return jsonify({
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "birthdate": user.birthdate,
-        "objective": user_goal.objective if user_goal else None,
-        "height": user_goal.height if user_goal else None,
-        "weight": user_goal.weight if user_goal else None,
-        "sex": user.sex,
-        "calorias_diarias": nutricion["calorias"],
-        "proteinas": nutricion["proteinas"],
-        "grasas": nutricion["grasas"],
-        "carbohidratos": nutricion["carbohidratos"]
-    }), 200
+        return jsonify({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "birthdate": user.birthdate,
+            "objective": user_goal.objective if user_goal else None,
+            "height": user_goal.height if user_goal else None,
+            "weight": user_goal.weight if user_goal else None,
+            "sex": user.sex,
+            "calorias_diarias": nutricion["calorias"],
+            "proteinas": nutricion["proteinas"],
+            "grasas": nutricion["grasas"],
+            "carbohidratos": nutricion["carbohidratos"]
+        }), 200
 
+    elif request.method == 'PUT':
+        data = request.get_json()
+        new_weight = data.get('weight')
+        unit = data.get('unit', 'kg')  # puedes usar esto si luego quieres convertir unidades
+
+        if not new_weight:
+            return jsonify({"error": "No se proporcionó el peso"}), 400
+
+        # Asegúrate de que hay un UserGoal
+        if not user_goal:
+            user_goal = UserGoal(user_id=user.id)
+            db.session.add(user_goal)
+
+        user_goal.weight = new_weight
+        db.session.commit()
+
+        return jsonify({"message": "Peso actualizado correctamente"}), 200

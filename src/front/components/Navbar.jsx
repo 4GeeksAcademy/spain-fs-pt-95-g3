@@ -28,7 +28,7 @@ const NavbarProject = () => {
 					 }}
 					 />
 				<span className="fw-bold text-dark fs-4">
-					Qué, Como y Cuándo
+					Qué, Como y Cuánto
 				</span>	
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
