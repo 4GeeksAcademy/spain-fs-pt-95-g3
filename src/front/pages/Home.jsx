@@ -37,7 +37,8 @@ export const Home = () => {
             textShadow: "1px 1px 2px rgba(0,0,0,0.1)"
           }}>
             Bienvenidos a Que, Como y Cuando
-          </h1>
+        </h1>
+        <h5 className="display-6 fw-bold mb-4 text-center py-3">En esta pagina podras encontrar:</h5>
       <Carousel interval={3000} pause={false}>
         {foodCategories.map((category, index) => (
           <Carousel.Item key={index}>
