@@ -193,3 +193,13 @@ def completar_reto(reto_id):
     db.session.commit()
 
     return jsonify(reto.serialize())
+
+@api.route('/challenges', methods=['GET'])
+@jwt_required()
+def obtener_retos():
+    
+    user_id = get_jwt_identity()
+    # Consulta los retos
+    retos = ChallengeUser.query.filter_by(user_id=user_id).all()
+
+    return jsonify([r.serialize() for r in retos]), 200
