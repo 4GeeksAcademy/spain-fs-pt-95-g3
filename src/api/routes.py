@@ -150,12 +150,11 @@ def profile():
     elif request.method == 'PUT':
         data = request.get_json()
         new_weight = data.get('weight')
-        unit = data.get('unit', 'kg')  # puedes usar esto si luego quieres convertir unidades
+        unit = data.get('unit', 'kg') 
 
         if not new_weight:
             return jsonify({"error": "No se proporcionó el peso"}), 400
 
-        # Asegúrate de que hay un UserGoal
         if not user_goal:
             user_goal = UserGoal(user_id=user.id)
             db.session.add(user_goal)
@@ -165,9 +164,32 @@ def profile():
 
         return jsonify({"message": "Peso actualizado correctamente"}), 200
     
-@api.route('/challenges', methods=['GET'])
+@api.route('/challenges', methods=['POST'])
 @jwt_required()
-def obtener_retos():
+def crear_reto():
     user_id = get_jwt_identity()
-    retos = ChallengeUser.query.filter_by(user_id=user_id).all()
-    return jsonify([r.serialize() for r in retos])
+    data = request.json
+    nombre = data.get('nombre')
+
+    if not nombre:
+        return jsonify({"error": "Falta el nombre del reto"}), 400
+
+    nuevo_reto = ChallengeUser(nombre=nombre, completado=False, user_id=user_id)
+    db.session.add(nuevo_reto)
+    db.session.commit()
+
+    return jsonify(nuevo_reto.serialize()), 201
+
+@api.route('/challenges/<int:reto_id>', methods=['PUT'])
+@jwt_required()
+def completar_reto(reto_id):
+    user_id = get_jwt_identity()
+    reto = ChallengeUser.query.filter_by(id=reto_id, user_id=user_id).first()
+
+    if not reto:
+        return jsonify({"error": "Reto no encontrado"}), 404
+
+    reto.completado = True
+    db.session.commit()
+
+    return jsonify(reto.serialize())

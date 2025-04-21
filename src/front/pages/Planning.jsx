@@ -240,7 +240,7 @@ export const Planning = () => {
                       {resultados.map((receta) => (
                         <button
                           key={receta.id}
-                          className="btn btn-outline-success w-100 mb-2"
+                          className="btn btn-outline-info w-100 mb-2"
                           onClick={() => addRecipe(comida, receta)}
                         >
                           {receta.title}

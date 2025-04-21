@@ -35,7 +35,7 @@ import { Link } from 'react-router-dom'
                  as={Link}
                  to={`/receta/${receta.id}`}                 
                  rel="noopener noreferrer"
-                 className="w-100">
+                 className="w-100 text-white">
                     Ver Receta
                 </Button>
             </Card.Footer>
