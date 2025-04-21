@@ -163,7 +163,7 @@ export const Profile = () => {
       {/* Widget */}
       {!widgetAdded && !showInput && (
         <Button
-          variant="primary"
+          variant="info text-white"
           className="w-100 mb-4 p-4 fs-4"
           onClick={() => setShowInput(true)}
         >
@@ -228,11 +228,11 @@ export const Profile = () => {
           <Col>
             <Card className="shadow-sm">
              <Card.Body>
-              <Card.Title className="text-center">Reto</Card.Title>
+              <Card.Title className="text-center">Retos</Card.Title>
               {datos.retos.map((reto, index) => (
                 <div key={index} className="d-flex justify-content-between align-items-center mb-3">
                   <span>{reto.nombre}</span>
-                  <Button variant={reto.completado ? "success" : "primary"} size="sm">
+                  <Button variant={reto.completado ? "success" : "warning text-white"} size="sm">
                     {reto.completado ? "Completado" : "Empezar el reto"}
                   </Button>
                 </div>              

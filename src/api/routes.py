@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, UserGoal
+from api.models import db, User, UserGoal, ChallengeUser
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -164,3 +164,10 @@ def profile():
         db.session.commit()
 
         return jsonify({"message": "Peso actualizado correctamente"}), 200
+    
+@api.route('/challenges', methods=['GET'])
+@jwt_required()
+def obtener_retos():
+    user_id = get_jwt_identity()
+    retos = ChallengeUser.query.filter_by(user_id=user_id).all()
+    return jsonify([r.serialize() for r in retos])

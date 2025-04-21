@@ -53,3 +53,21 @@ class UserGoal(db.Model):
         }
 
     user = db.relationship('User', backref='goals')
+
+class ChallengeUser(db.Model):
+    __tablename__ = 'challenges_user'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    completado = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('retos', lazy=True))
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "completado": self.completado,
+            "user_id": self.user_id
+        }
