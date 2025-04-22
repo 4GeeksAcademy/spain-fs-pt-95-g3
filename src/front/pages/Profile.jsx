@@ -24,24 +24,19 @@ function getAge(birthdate) {
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const Profile = () => {
-  const datos = {
-    pasos: 0,
-    retos: [
-      { nombre: "Dejar el chocolate", completado: false },
-      { nombre: "Dejar el azúcar", completado: false }
-    ]
-  };
 
   const [showInput, setShowInput] = useState(false);
   const [widgetAdded, setWidgetAdded] = useState(
     () => localStorage.getItem("widgetAdded") === "true");
   const [actualWeight, setActualWeight] = useState(
-    () => parseFloat(localStorage.getItem("pesoActual")) || datos.actualWeight
-  );
+    () => parseFloat(localStorage.getItem("pesoActual")) || 0);
   const [newWeight, setNewWeight] = useState("");
 
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState("");
+
+  const [retos, setRetos] = useState([]);
+  const [nuevoReto, setNuevoReto] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -67,6 +62,24 @@ export const Profile = () => {
       }
     };
     fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    const fetchRetos = async () => {
+      const token = localStorage.getItem("access_token");
+      try {
+        const res = await fetch(`${baseUrl}/api/challenges`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) setRetos(data);
+        else console.error("Error al cargar retos", data);
+      } catch (err) {
+        console.error("Error de conexión al cargar retos", err);
+      }
+    };
+    fetchRetos();
   }, []);
 
   if (error) return <p>{error}</p>;
@@ -100,6 +113,60 @@ export const Profile = () => {
     setWidgetAdded(true);
     setShowInput(false);
     setNewWeight("");
+  };
+
+  const handleAgregarReto = async () => {
+    const token = localStorage.getItem("access_token");
+    if (nuevoReto.trim() === "") return;
+  
+    try {
+      const res = await fetch(`${baseUrl}/api/challenges`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ nombre: nuevoReto })
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        setRetos((prev) => [...prev, data]);
+        setNuevoReto("");
+      } else {
+        console.error("Error al crear reto", data);
+      }
+    } catch (err) {
+      console.error("Error de conexión al crear reto", err);
+    }
+  };
+
+  const handleCompletarReto = async (id) => {
+    const token = localStorage.getItem("access_token");
+  
+    try {
+      const res = await fetch(`${baseUrl}/api/challenges/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        setRetos((prev) =>
+          prev.map((reto) =>
+            reto.id === id ? { ...reto, completado: true } : reto
+          )
+        );
+      } else {
+        console.error("Error al completar reto", data);
+      }
+    } catch (err) {
+      console.error("Error de conexión al completar reto", err);
+    }
   };
 
   return (
@@ -138,7 +205,7 @@ export const Profile = () => {
                   <div className="d-flex flex-column align-items-center">
                     <FaWalking size={24} className="text-primary mb-2" />
                     <strong>Pasos</strong>
-                    <span>{datos.pasos}</span>
+                    <span>0</span>
                   </div>
                 </Col>
               </Row>
@@ -163,7 +230,7 @@ export const Profile = () => {
       {/* Widget */}
       {!widgetAdded && !showInput && (
         <Button
-          variant="primary"
+          variant="info text-white"
           className="w-100 mb-4 p-4 fs-4"
           onClick={() => setShowInput(true)}
         >
@@ -183,7 +250,7 @@ export const Profile = () => {
                   className="mb-2"
                   value={newWeight}
                   onChange={(e) => setNewWeight(e.target.value)}
-                />GuardarPeso
+                />
                 <Button onClick={handleSavingWeight} className="w-100 btn-info text-white">
                   Guardar peso
                 </Button>
@@ -224,23 +291,28 @@ export const Profile = () => {
       )}
 
       {/*Retos*/}
-      <Row>
-          <Col>
-            <Card className="shadow-sm">
-             <Card.Body>
-              <Card.Title className="text-center">Reto</Card.Title>
-              {datos.retos.map((reto, index) => (
-                <div key={index} className="d-flex justify-content-between align-items-center mb-3">
-                  <span>{reto.nombre}</span>
-                  <Button variant={reto.completado ? "success" : "primary"} size="sm">
-                    {reto.completado ? "Completado" : "Empezar el reto"}
-                  </Button>
-                </div>              
-              ))}
-             </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+      <Form className="mb-3 d-flex gap-2">
+  <Form.Control
+    type="text"
+    placeholder="Nuevo reto"
+    value={nuevoReto}
+    onChange={(e) => setNuevoReto(e.target.value)}
+  />
+  <Button onClick={handleAgregarReto} className="btn btn-info text-white">Añadir</Button>
+</Form>
+
+{retos.map((reto) => (
+  <div key={reto.id} className="d-flex justify-content-between align-items-center mb-3">
+    <span>{reto.nombre}</span>
+    <Button
+      variant={reto.completado ? "success" : "warning text-white"}
+      size="sm"
+      onClick={() => handleCompletarReto(reto.id)}
+    >
+      {reto.completado ? "Completado" : "Empezar el reto"}
+    </Button>
+  </div>
+))}
     </Container>
   );
 };

@@ -3,6 +3,7 @@ import axios from 'axios';
 import debounce from 'lodash.debounce';
 
 const comidasDelDia = ['Desayuno', 'Almuerzo', 'Cena', 'Merienda'];
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export const Planning = () => {
   
@@ -17,6 +18,7 @@ export const Planning = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [ingredientes, setIngredientes] = useState([]);
+  const [todayMeals, setTodayMeals] = useState([]);
 
   const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 
@@ -27,53 +29,6 @@ export const Planning = () => {
       setComidas(JSON.parse(datosGuardados));
     }
   }, []);
-
-  /*Función debounce para optimizar las llamadas a la API
-    Espera 500ms después de la última pulsación para ejecutar
-   */
-  const buscarRecetasPorIngrediente = useCallback(
-    debounce(async (ingrediente) => {
-      if (!ingrediente.trim() || ingrediente.trim().length < 1) {
-        setResultados([]);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Endpoint para buscar por ingredientes
-        const response = await axios.get(
-          `https://api.spoonacular.com/recipes/findByIngredients`, 
-          {
-            params: {
-              apiKey: API_KEY,
-              ingredients: ingrediente,
-              number: 10, // Limitar resultados
-              ranking: 1, // Ordenar por mejor coincidencia
-              ignorePantry: true // Ignorar ingredientes básicos
-            }
-          }
-        );
-        
-        setResultados(response.data);
-      } catch (err) {
-        setError('Error al buscar recetas. Intenta nuevamente.');
-        console.error('Error fetching recipes:', err);
-      } finally {
-        setLoading(false);
-      }
-    }, 500),
-    [API_KEY]
-  );
-
- 
-   /* Maneja el cambio en el input de búsqueda*/
-  const handleBuscar = (evento) => {
-    const texto = evento.target.value;
-    setBusqueda(texto);
-    buscarRecetasPorIngrediente(texto);
-  };
 
   /*Maneja el cambio en el input de ingredientes*/
   const handleIngredientesChange = (evento) => {
@@ -148,11 +103,72 @@ export const Planning = () => {
     setBusqueda('');
     setResultados([]);
   };
+  
+  const [saving, setSaving] = useState(false);
 
-  /*Guarda las recetas asignadas en localStorage*/
-  const saveData = () => {
-    localStorage.setItem('comidas', JSON.stringify(comidas));
-    alert('¡Planificación guardada correctamente!');
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    const fetchToday = async () => {
+      try {
+        const res = await fetch(`${baseUrl}/api/meals`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        const today = new Date().toISOString().split('T')[0];
+        setTodayMeals(data.filter(m => m.date === today));
+      } catch (err) {
+        console.error('Error al cargar comidas de hoy:', err);
+      }
+    };
+    fetchToday();
+  }, []);
+
+  const savePlanning = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      alert('No estás autenticado');
+      return;
+    }
+    setSaving(true);
+
+    try {
+      const tasks = [];
+      comidasDelDia.forEach(comida => {
+        comidas[comida].forEach(receta => {
+          // Por cada receta, preparamos un POST
+          tasks.push(
+            fetch(`${baseUrl}/api/meals`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                name: comida,
+                description: receta.title,
+              })
+            }).then(res => {
+              if (!res.ok) {
+                return res.json().then(err => {
+                  throw new Error(err.error || 'Error desconocido');
+                });
+              }
+              return res.json();
+            })
+          );
+        });
+      });
+
+      await Promise.all(tasks);
+
+      // Si todo va bien:
+      alert('¡Planificación guardada en el servidor!');
+    } catch (err) {
+      console.error(err);
+
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -171,7 +187,7 @@ export const Planning = () => {
               placeholder="Ej: pollo, arroz, tomate..."
               value={busqueda}
               onChange={handleIngredientesChange}
-              onKeyPress={(e) => e.key === 'Enter' && agregarIngrediente()}
+              onKeyUp={(e) => e.key === 'Enter' && agregarIngrediente()}
             />
             <button 
               className="btn btn-primary" 
@@ -240,7 +256,7 @@ export const Planning = () => {
                       {resultados.map((receta) => (
                         <button
                           key={receta.id}
-                          className="btn btn-outline-success w-100 mb-2"
+                          className="btn btn-outline-info w-100 mb-2"
                           onClick={() => addRecipe(comida, receta)}
                         >
                           {receta.title}
@@ -262,7 +278,6 @@ export const Planning = () => {
       <div className="card">
         <div className="card-body">
           <h5 className="card-title">Tu planificación</h5>
-          
           <table className="table table-hover">
             <thead>
               <tr>
@@ -296,16 +311,47 @@ export const Planning = () => {
               ))}
             </tbody>
           </table>
-          
-          <button 
-            className="btn btn-warning mt-3" 
-            onClick={saveData}
-            disabled={Object.values(comidas).every(arr => arr.length === 0)}
-          >
-            Guardar planificación
-          </button>
+          <button
+        className="btn btn-warning mt-3"
+        onClick={savePlanning}
+        disabled={
+          saving ||
+          Object.values(comidas).every(arr => arr.length === 0)
+        }
+      >
+        {saving ? 'Guardando…' : 'Guardar planificación'}
+      </button>
+      
         </div>
+        
       </div>
+      <div className="card mt-4 shadow-sm">
+  <div className="card-header bg-light">
+    <h5 className="mb-0">Comidas de hoy</h5>
+  </div>
+  <div className="card-body">
+    {todayMeals.length > 0 ? (
+      <ul className="list-group list-group-flush">
+        {todayMeals.map(meal => (
+          <li
+            key={meal.id}
+            className="list-group-item d-flex justify-content-between align-items-center"
+          >
+            <div>
+              <strong>{meal.name}:</strong> {meal.description}
+            </div>
+            <small className="text-muted">{meal.date}</small>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-muted mb-0">
+        Aún no has registrado ninguna comida hoy.
+      </p>
+    )}
+  </div>
+</div>
+
     </div>
   );
 };      

@@ -77,7 +77,7 @@ const NavbarProject = () => {
 						className="user-dropdown"
 					>
 						<NavDropdown.Item as={Link} to="/profile" className="text-dark">
-						Hola "insertar nombre"
+						Hola usuario
 						</NavDropdown.Item>
 						<NavDropdown.Item as={Link} to="/register" onClick={handleLogout} className="text-danger">
 						Salir

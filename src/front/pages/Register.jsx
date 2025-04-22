@@ -227,7 +227,7 @@ export const Register = () => {
         {step === 6 && (
           <div className="text-center">
             <h2>Confirmación</h2>
-            <p>Estos son los datos que tenemos de ti por ahora. ¡Podrás actualizarlos en tu perfil cuando quieras! ☺️</p>
+            <p>Estos son los datos que tenemos de ti por ahora. ¡Recuerda que puedes completar más campos desde tu perfil! ☺️</p>
             <p><strong>Nombre:</strong> {formData.name}</p>
             <p><strong>Correo:</strong> {formData.email}</p>
             <p><strong>Fecha de nacimiento:</strong> {formData.birthdate}</p>

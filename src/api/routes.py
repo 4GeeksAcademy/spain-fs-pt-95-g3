@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, UserGoal
+from api.models import db, User, UserGoal, ChallengeUser, Meal
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -150,12 +150,11 @@ def profile():
     elif request.method == 'PUT':
         data = request.get_json()
         new_weight = data.get('weight')
-        unit = data.get('unit', 'kg')  # puedes usar esto si luego quieres convertir unidades
+        unit = data.get('unit', 'kg') 
 
         if not new_weight:
             return jsonify({"error": "No se proporcionó el peso"}), 400
 
-        # Asegúrate de que hay un UserGoal
         if not user_goal:
             user_goal = UserGoal(user_id=user.id)
             db.session.add(user_goal)
@@ -164,3 +163,85 @@ def profile():
         db.session.commit()
 
         return jsonify({"message": "Peso actualizado correctamente"}), 200
+    
+@api.route('/challenges', methods=['POST'])
+@jwt_required()
+def crear_reto():
+    user_id = get_jwt_identity()
+    data = request.json
+    nombre = data.get('nombre')
+
+    if not nombre:
+        return jsonify({"error": "Falta el nombre del reto"}), 400
+
+    nuevo_reto = ChallengeUser(nombre=nombre, completado=False, user_id=user_id)
+    db.session.add(nuevo_reto)
+    db.session.commit()
+
+    return jsonify(nuevo_reto.serialize()), 201
+
+@api.route('/challenges/<int:reto_id>', methods=['PUT'])
+@jwt_required()
+def completar_reto(reto_id):
+    user_id = get_jwt_identity()
+    reto = ChallengeUser.query.filter_by(id=reto_id, user_id=user_id).first()
+
+    if not reto:
+        return jsonify({"error": "Reto no encontrado"}), 404
+
+    reto.completado = True
+    db.session.commit()
+
+    return jsonify(reto.serialize())
+
+@api.route('/challenges', methods=['GET'])
+@jwt_required()
+def obtener_retos():
+    
+    user_id = get_jwt_identity()
+    # Consulta los retos
+    retos = ChallengeUser.query.filter_by(user_id=user_id).all()
+
+    return jsonify([r.serialize() for r in retos]), 200
+
+@api.route('/meals', methods=['POST'])
+@jwt_required()
+def registrar_comida():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+
+    name = data.get("name")
+    description = data.get("description", "")
+    fecha = data.get("date", date.today().isoformat())
+
+    if not name:
+        return jsonify({"error": "El nombre de la comida es obligatorio"}), 400
+
+    try:
+        nueva_comida = Meal(
+            user_id=user_id,
+            name=name,
+            description=description,
+            date=datetime.strptime(fecha, "%Y-%m-%d").date()
+        )
+        db.session.add(nueva_comida)
+        db.session.commit()
+        return jsonify(nueva_comida.serialize()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Hubo un problema al guardar la comida", "details": str(e)}), 500
+    
+@api.route('/meals', methods=['GET'])
+@jwt_required()
+def obtener_comidas():
+    user_id = get_jwt_identity()
+    fecha_str = request.args.get('date', date.today().isoformat())
+    try:
+        filtro_fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"error": "Formato de fecha inválido, debe ser YYYY-MM-DD"}), 400
+
+    comidas = Meal.query.filter_by(user_id=user_id, date=filtro_fecha)\
+                         .order_by(Meal.date.desc())\
+                         .all()
+    return jsonify([c.serialize() for c in comidas]), 200

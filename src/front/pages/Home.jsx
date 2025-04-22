@@ -69,6 +69,7 @@ export const Home = () => {
             textShadow: "1px 1px 2px rgba(0,0,0,0.1)"
           }}>
            {searchQuery ? `Resultados para: ${searchQuery}` : "Bienvenidos a Qué, Como y Cuánto"}
+
         </h1>
 
         {searchQuery ? (
