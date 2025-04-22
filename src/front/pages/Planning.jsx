@@ -18,6 +18,7 @@ export const Planning = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [ingredientes, setIngredientes] = useState([]);
+  const [todayMeals, setTodayMeals] = useState([]);
 
   const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 
@@ -104,6 +105,23 @@ export const Planning = () => {
   };
   
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    const fetchToday = async () => {
+      try {
+        const res = await fetch(`${baseUrl}/api/meals`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        const today = new Date().toISOString().split('T')[0];
+        setTodayMeals(data.filter(m => m.date === today));
+      } catch (err) {
+        console.error('Error al cargar comidas de hoy:', err);
+      }
+    };
+    fetchToday();
+  }, []);
 
   const savePlanning = async () => {
     const token = localStorage.getItem("access_token");
@@ -303,8 +321,37 @@ export const Planning = () => {
       >
         {saving ? 'Guardando…' : 'Guardar planificación'}
       </button>
+      
         </div>
+        
       </div>
+      <div className="card mt-4 shadow-sm">
+  <div className="card-header bg-light">
+    <h5 className="mb-0">Comidas de hoy</h5>
+  </div>
+  <div className="card-body">
+    {todayMeals.length > 0 ? (
+      <ul className="list-group list-group-flush">
+        {todayMeals.map(meal => (
+          <li
+            key={meal.id}
+            className="list-group-item d-flex justify-content-between align-items-center"
+          >
+            <div>
+              <strong>{meal.name}:</strong> {meal.description}
+            </div>
+            <small className="text-muted">{meal.date}</small>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="text-muted mb-0">
+        Aún no has registrado ninguna comida hoy.
+      </p>
+    )}
+  </div>
+</div>
+
     </div>
   );
 };      
