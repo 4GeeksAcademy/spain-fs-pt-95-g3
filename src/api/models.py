@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Float, Boolean
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, date
 
 db = SQLAlchemy()
 
@@ -73,3 +73,23 @@ class ChallengeUser(db.Model):
         }
 
 User.challenges = db.relationship('ChallengeUser', back_populates='user')
+
+class Meal(db.Model):
+    __tablename__ = 'meal'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(50), nullable=False)  # desayuno, comida, cena, snack...
+    description = db.Column(db.String(255), nullable=True)
+    date = db.Column(db.Date, nullable=False, default=date.today)
+
+    user = db.relationship('User', backref='meals')
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "name": self.name,
+            "description": self.description,
+            "date": self.date.isoformat()
+        }

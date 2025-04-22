@@ -28,9 +28,6 @@ export const Planning = () => {
     }
   }, []);
 
-  /*Función debounce para optimizar las llamadas a la API
-    Espera 500ms después de la última pulsación para ejecutar
-   */
   const buscarRecetasPorIngrediente = useCallback(
     debounce(async (ingrediente) => {
       if (!ingrediente.trim() || ingrediente.trim().length < 1) {
@@ -49,7 +46,7 @@ export const Planning = () => {
             params: {
               apiKey: API_KEY,
               ingredients: ingrediente,
-              number: 10, // Limitar resultados
+              number: 10, 
               ranking: 1, // Ordenar por mejor coincidencia
               ignorePantry: true // Ignorar ingredientes básicos
             }

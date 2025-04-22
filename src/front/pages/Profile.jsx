@@ -250,7 +250,7 @@ export const Profile = () => {
                   className="mb-2"
                   value={newWeight}
                   onChange={(e) => setNewWeight(e.target.value)}
-                />GuardarPeso
+                />
                 <Button onClick={handleSavingWeight} className="w-100 btn-info text-white">
                   Guardar peso
                 </Button>
