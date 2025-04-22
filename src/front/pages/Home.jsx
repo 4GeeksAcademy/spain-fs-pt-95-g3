@@ -53,8 +53,7 @@ export const Home = () => {
             </div>
             <Carousel.Caption style={{ background: "rgba(0,0,0,0.5)", borderRadius: "10px" }}>
               <h3>{category.name}</h3>
-              <p>{category.description}</p>
-              <Button variant="light">Ver recetas</Button>
+              <p>{category.description}</p>              
             </Carousel.Caption>
           </Carousel.Item>
         ))}
