@@ -1,19 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navbar, Nav, Container, Form, FormControl, Button, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const NavbarProject = () => {
+	const [searchQuery, setSearchQuery] = useState("")
+	const navigate = useNavigate();
+
+	const handleSearch = (e) =>{
+		e.preventDefault();
+		if (searchQuery.trim()){
+			navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+			setSearchQuery("");
+		}
+	};
 	const logoUrl = "https://i.imgur.com/CckqetR.png";
 	const handleLogout = () => {
 		localStorage.removeItem("access_token");
 		navigate("/register");                    
 	  };
+
 	return (
 		<Navbar bg="light" expand="lg" sticky="top" className="shadow">
 			<Container className="rounded">
-				{/*Logo y titulo*/}
-				<Navbar.Brand as={Link} to="/" className="d-flex align-items-center" style={{height:"60px"}}>
+					<Navbar.Brand as={Link} to="/" className="d-flex align-items-center" style={{height:"60px"}}>
 					<img src={logoUrl}
 					alt="Logo"
 					style={{
@@ -46,13 +57,15 @@ const NavbarProject = () => {
 						</Nav.Link>
 					</Nav>
 					{/*barra de busqueda*/}
-					<Form className="d-flex me-3">
+					<Form className="d-flex me-3" onSubmit={handleSearch}>
 						<FormControl
 						type="search"
 						placeholder="Buscar Recetas..."
 						className="me-2"
-						aria-label="Search"/>
-						<Button variant="outline-info">
+						aria-label="Search"
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}/>
+						<Button variant="outline-info" type="submit">
 							<i className="fas fa-search"></i>
 						</Button>
 					</Form>
