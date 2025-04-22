@@ -117,7 +117,7 @@ export const Demo = () => {
               <div key={index} className="d-flex justify-content-between align-items-center mb-3">
                 <span>{reto.nombre}</span>
                 <Button variant={reto.completado ? "success" : "primary"} size="sm">
-                  {reto.completado ? "Completado" : "Empezar el reto"}
+                  {reto.completado ? "Completado" : "Reto empezado"}
                 </Button>
               </div>              
             ))}
