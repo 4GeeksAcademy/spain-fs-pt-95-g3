@@ -12,40 +12,32 @@ export const Recipes = () => {
   const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 
   const fetchRecetas = async (searchQuery = "") => {
-  
     setLoading(true);
     setError(null);
-
+  
     try {
       let endpoint;
       let response;
-
+  
       if (!searchQuery) {
-        endpoint = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&query=${encodeURIComponent(searchQuery)}&number=9&addRecipeInformation=true`;
-        response = await axios.get(endpoint);
-        setRecetas(response.data.results); 
-      }   
-      else {
-        localStorage.setItem('cachedRecetas', JSON.stringify(response.data.recipes || []));
-        const cachedRecetas = localStorage.getItem('cachedRecetas');
+        //Recetas aleatorias
         endpoint = `https://api.spoonacular.com/recipes/random?apiKey=${API_KEY}&number=9`;
         response = await axios.get(endpoint);
+        localStorage.setItem('cachedRecetas', JSON.stringify(response.data.recipes || []));
         setRecetas(response.data.recipes);
-        if (cachedRecetas) {
-          setRecetas(JSON.parse(cachedRecetas));
-          setLoading(false);
-          return;
-        }          
+      } else {
+     
+        endpoint = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&query=${encodeURIComponent(searchQuery)}&number=9&addRecipeInformation=true`;
+        response = await axios.get(endpoint);
+        setRecetas(response.data.results);
       }
-
-      }
-       catch (err) {
-        setError("Error al cargar las recetas. Por favor intenta más tarde.");
-        console.error("Error fetching recipes:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    } catch (err) {
+      setError("Error al cargar las recetas. Por favor intenta más tarde.");
+      console.error("Error fetching recipes:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
     useEffect(() => {
       const cachedRecetas = localStorage.getItem('cachedRecetas');
       if(cachedRecetas && !query) {

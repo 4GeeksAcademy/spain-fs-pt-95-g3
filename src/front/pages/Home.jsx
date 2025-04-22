@@ -124,7 +124,7 @@ export const Home = () => {
               <p>{category.description}</p> 
               <Button 
               variant="info"
-              href={`/recipes?category=${category.name.toLowerCase()}`}
+              href={`/recipes?search=${category.name.toLowerCase()}`}
               >Ver recetas 
               </Button>
             </Carousel.Caption>

@@ -175,11 +175,6 @@ export const Profile = () => {
       <Row className="mb-4">
         <Col>
           <h1 className="text-center">Perfil</h1>
-          <div className="d-flex justify-content-center mb-3">
-            <Button variant="outline-info" className="mx-2">
-              Editar
-            </Button>
-          </div>
         </Col>
       </Row>
 
@@ -291,6 +286,8 @@ export const Profile = () => {
       )}
 
       {/*Retos*/}
+      <Card className="shadow-sm">
+      <Card.Body>
       <Form className="mb-3 d-flex gap-2">
   <Form.Control
     type="text"
@@ -309,10 +306,12 @@ export const Profile = () => {
       size="sm"
       onClick={() => handleCompletarReto(reto.id)}
     >
-      {reto.completado ? "Completado" : "Empezar el reto"}
+      {reto.completado ? "Completado" : "Reto empezado"}
     </Button>
   </div>
 ))}
+</Card.Body>
+</Card>
     </Container>
   );
 };
