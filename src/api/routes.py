@@ -235,5 +235,13 @@ def registrar_comida():
 @jwt_required()
 def obtener_comidas():
     user_id = get_jwt_identity()
-    comidas = Meal.query.filter_by(user_id=user_id).order_by(Meal.date.desc()).all()
+    fecha_str = request.args.get('date', date.today().isoformat())
+    try:
+        filtro_fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"error": "Formato de fecha inválido, debe ser YYYY-MM-DD"}), 400
+
+    comidas = Meal.query.filter_by(user_id=user_id, date=filtro_fecha)\
+                         .order_by(Meal.date.desc())\
+                         .all()
     return jsonify([c.serialize() for c in comidas]), 200
