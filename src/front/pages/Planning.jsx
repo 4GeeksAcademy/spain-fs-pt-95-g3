@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import debounce from 'lodash.debounce';
+import Calendar from "./Calendar";
 
 const comidasDelDia = ['Desayuno', 'Almuerzo', 'Cena', 'Merienda'];
 const baseUrl = import.meta.env.VITE_API_URL;
@@ -173,6 +174,8 @@ export const Planning = () => {
 
   return (
     <div className="container mt-4">
+      <div className="row">
+      
       <h1 className="text-center mb-4"
       style={{
         color: "#2c3e50",
@@ -181,12 +184,11 @@ export const Planning = () => {
         position: "relative",
         paddingBottom: "10px"
       }}>Planificación de comidas</h1>
-
+      <div className="col-md-8">
       {/* Sección de búsqueda por ingredientes */}
       <div className="card mb-4">
         <div className="card-body">
           <h5 className="card-title">Buscar recetas por ingredientes</h5>
-          
           <div className="input-group mb-3">
             <input
               type="text"
@@ -356,9 +358,14 @@ export const Planning = () => {
         Aún no has registrado ninguna comida hoy.
       </p>
     )}
-  </div>
-</div>
-
+    </div>
+  
+      </div>
+      </div>
+      <div className="col-md-4">
+      <Calendar />
+      </div>
+      </div>
     </div>
   );
 };      
