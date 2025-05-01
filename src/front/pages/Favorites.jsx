@@ -7,7 +7,14 @@ export const Favorites = () => {
 
   return (
     <Container className="mt-4">
-      <h2 className="mb-4">Mis recetas favoritas</h2>
+      <h1 className="text-center mb-4"
+      style={{
+        color: "#2c3e50",
+        fontWeight: "700",
+        textShadow: "1px 1px 3px rgba(0,0,0,0.1)",
+        position: "relative",
+        paddingBottom: "10px"
+      }}>Mis recetas favoritas</h1>
       {favorites.length === 0 ? (
         <p>No tienes recetas favoritas aún.</p>
       ) : (

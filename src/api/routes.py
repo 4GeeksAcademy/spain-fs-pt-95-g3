@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, UserGoal, ChallengeUser, Meal
+from api.models import db, User, UserGoal, ChallengeUser, Meal, Favorite
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -245,3 +245,44 @@ def obtener_comidas():
                          .order_by(Meal.date.desc())\
                          .all()
     return jsonify([c.serialize() for c in comidas]), 200
+
+@api.route('/favorites', methods=['GET', 'POST'])
+@jwt_required()
+def handle_favorites():
+    user_id = get_jwt_identity()
+
+    if request.method == 'GET':
+        favorites = Favorite.query.filter_by(user_id=user_id).all()
+        return jsonify([fav.serialize() for fav in favorites]), 200
+
+    elif request.method == 'POST':
+        data = request.get_json()
+        required_fields = ['receta_id', 'title', 'image']
+
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Faltan campos obligatorios"}), 400
+
+        new_favorite = Favorite(
+            user_id=user_id,
+            receta_id=data['receta_id'],
+            title=data['title'],
+            image=data['image']
+        )
+        db.session.add(new_favorite)
+        db.session.commit()
+
+        return jsonify({"message": "Favorito guardado correctamente"}), 201
+
+@api.route('/favorites/<int:favorite_id>', methods=['DELETE'])
+@jwt_required()
+def delete_favorite(favorite_id):
+    user_id = get_jwt_identity()
+    favorite = Favorite.query.filter_by(id=favorite_id, user_id=user_id).first()
+
+    if not favorite:
+        return jsonify({"error": "Favorito no encontrado"}), 404
+
+    db.session.delete(favorite)
+    db.session.commit()
+
+    return jsonify({"message": "Favorito eliminado correctamente"}), 200

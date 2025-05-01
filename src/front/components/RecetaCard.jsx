@@ -4,30 +4,57 @@ import { Link } from 'react-router-dom';
 import {FaHeart, FaRegHeart } from "react-icons/fa";
 import { useFavorites } from "../Context/FavoritesContext";
 
-
+const baseUrl = import.meta.env.VITE_API_URL;
  export const RecetaCard = ({receta}) => {
     const title = receta.title || receta.name;
     const image = receta.image || "https://via.placeholder.com/300";
     const summary =receta.summary || receta.instructions || "Descripcion no disponible";
 
-    //contexto para manejo de favoritos
     const { favorites, addFavorite, removeFavorite } = useFavorites();
     const [isHovered, setIsHovered] = useState(false);
-
-    //verificacion de receta si existe en favoritos
+    
+    //verificar si existe
     const isFavorite = favorites.some(fav => fav.id === receta.id);
 
-    const handleFavorite = (e) => {
+    const handleFavorite = async (e) => {
         e.preventDefault();
         e.stopPropagation();
-
-        if(isFavorite) {
-            removeFavorite(receta.id);            
-        } else {
-            addFavorite(receta);
+    
+        const token = localStorage.getItem("access_token");
+    
+        if (!token) {
+            alert("Debes estar logueado para usar favoritos");
+            return;
+        }
+    
+        try {
+            if (isFavorite) {
+                await fetch(`${baseUrl}/api/favorites/${receta.id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+                removeFavorite(receta.id); 
+            } else {
+                await fetch(`${baseUrl}/api/favorites`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        receta_id: receta.id,
+                        title: title,
+                        image: image
+                    })
+                });
+                addFavorite(receta); 
+            }
+        } catch (error) {
+            console.error("Error al actualizar favoritos:", error);
         }
     };
-
 
     return (
         <Card className="h-100 shadow-sm border-0 overflow-hidden"

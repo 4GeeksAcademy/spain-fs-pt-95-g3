@@ -173,7 +173,14 @@ export const Planning = () => {
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">Planificación de comidas</h2>
+      <h1 className="text-center mb-4"
+      style={{
+        color: "#2c3e50",
+        fontWeight: "700",
+        textShadow: "1px 1px 3px rgba(0,0,0,0.1)",
+        position: "relative",
+        paddingBottom: "10px"
+      }}>Planificación de comidas</h1>
 
       {/* Sección de búsqueda por ingredientes */}
       <div className="card mb-4">

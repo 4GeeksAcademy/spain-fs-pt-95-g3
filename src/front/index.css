@@ -1,5 +1,26 @@
-/* Efecto hover suave */
-
+body {
+  background-color: rgba(248, 249, 250, 0.7);
+  background-image: url('https://img.freepik.com/fotos-premium/envase-vegetales-aislados-sobre-fondo-blanco-alimentos-ia-generativa_74760-26355.jpg?w=740');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: soft-light;
+}*/
+/*  
+.custom-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  background-image: url('public/fondo (20250501115951).jpg');
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: contain;
+ 
+  pointer-events: none;
+}  */
 .navbar-brand:hover img {
     opacity: 0.9;
     transform: scale(1.05);
@@ -58,14 +79,6 @@
   transform: scale(1.05);
 }
 
-body {
-  background-color: rgba(248, 249, 250, 0.7);
-  background-image: url('https://img.freepik.com/fotos-premium/envase-vegetales-aislados-sobre-fondo-blanco-alimentos-ia-generativa_74760-26355.jpg?w=740');
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: soft-light;
-}
 
 /* Mi Plan */
 .card {

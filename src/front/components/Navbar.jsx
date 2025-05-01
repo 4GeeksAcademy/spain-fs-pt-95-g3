@@ -38,7 +38,15 @@ const NavbarProject = () => {
 						e.target.src = "https://via.placeholder.com/40";
 					 }}
 					 />
-				<span className="fw-bold text-dark fs-4">
+				<span className="text-center fw-bold"
+					style={{
+						color: "#2c3e50",
+						fontWeight: "700",
+						textShadow: "1px 1px 3px rgba(0,0,0,0.1)",
+						position: "relative",
+						paddingBottom: "5px",
+						fontSize: "1.8rem",
+					}}>
 					Qué, Como y Cuánto
 				</span>	
 				</Navbar.Brand>

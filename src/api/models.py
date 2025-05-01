@@ -93,3 +93,23 @@ class Meal(db.Model):
             "description": self.description,
             "date": self.date.isoformat()
         }
+    
+class Favorite(db.Model):
+    __tablename__ = 'favorite'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receta_id = db.Column(db.Integer, nullable=False)
+    title = db.Column(db.String(255), nullable=True)
+    image = db.Column(db.String(255), nullable=True)
+
+    user = db.relationship('User', backref='favorites')
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "receta_id": self.receta_id,
+            "title": self.title,
+            "image": self.image
+        }

@@ -174,7 +174,15 @@ export const Profile = () => {
       {/* Header */}
       <Row className="mb-4">
         <Col>
-          <h1 className="text-center">Perfil</h1>
+          <h1 className="text-center mb-4"
+            style={{
+              color: "#2c3e50",
+              fontWeight: "700",
+              textShadow: "1px 1px 3px rgba(0,0,0,0.1)",
+              position: "relative",
+              paddingBottom: "10px"
+            }}>Perfil
+          </h1>
         </Col>
       </Row>
 
