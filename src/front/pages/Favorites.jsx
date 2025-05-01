@@ -1,72 +1,64 @@
-import React, { useState } from "react";
+import { useFavorites } from "../Context/FavoritesContext";
+import { Card, Button, Container, Row, Col } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 export const Favorites = () => {
-    // Más adelante hay que borrar y hacer fetch a la api
-    // const Favorites = ({ favorites }) => {
-    
-    const [activeTab, setActiveTab] = useState('recipes'); // recetas o alimentos
-
-    // Ejemplos simulados
-  const favoriteRecipes = [
-    { name: 'Ensalada César', description: 'Pollo, lechuga y aderezo César.', image: 'https://via.placeholder.com/150' },
-    { name: 'Pizza Margarita', description: 'Tomate, mozzarella y albahaca.', image: 'https://via.placeholder.com/150' }
-  ];
-
-  const favoriteFoods = [
-    { name: 'Manzana', description: 'Fruta fresca y saludable.', image: 'https://via.placeholder.com/150' },
-    { name: 'Yogur', description: 'Yogur natural bajo en grasas.', image: 'https://via.placeholder.com/150' }
-  ];
+  const { favorites } = useFavorites();
 
   return (
-    <div className="container mt-5">
-      <h2 className="mb-4">Mis Favoritos</h2>
-      
-      {/* Botones para cambiar de pestaña */}
-      <div className="btn-group mb-4">
-        <button 
-          className={`btn ${activeTab === 'recipes' ? 'btn-info' : 'btn-outline-primary'}`} 
-          onClick={() => setActiveTab('recipes')}
-        >
-          Recetas Favoritas
-        </button>
-        <button 
-          className={`btn ${activeTab === 'foods' ? 'btn-info' : 'btn-outline-primary'}`} 
-          onClick={() => setActiveTab('foods')}
-        >
-          Alimentos Favoritos
-        </button>
-      </div>
+    <Container className="mt-4">
+      <h2 className="mb-4">Mis recetas favoritas</h2>
+      {favorites.length === 0 ? (
+        <p>No tienes recetas favoritas aún.</p>
+      ) : (
+        <Row xs={1} md={2} lg={3} className="g-4">
+          {favorites.map((receta) => {
+            const title = receta.title || receta.name;
+            const image = receta.image || "https://via.placeholder.com/300";
+            const summary =
+              receta.summary || receta.instructions || "Descripción no disponible";
 
-      <div className="row">
-        {activeTab === 'recipes' && favoriteRecipes.length > 0 ? (
-          favoriteRecipes.map((item, index) => (
-            <div className="col-md-4 mb-4" key={index}>
-              <div className="card h-100">
-                <img src={item.image} className="card-img-top" alt={item.name} />
-                <div className="card-body">
-                  <h5 className="card-title">{item.name}</h5>
-                  <p className="card-text">{item.description}</p>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : activeTab === 'foods' && favoriteFoods.length > 0 ? (
-          favoriteFoods.map((item, index) => (
-            <div className="col-md-4 mb-4" key={index}>
-              <div className="card h-100">
-                <img src={item.image} className="card-img-top" alt={item.name} />
-                <div className="card-body">
-                  <h5 className="card-title">{item.name}</h5>
-                  <p className="card-text">{item.description}</p>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No tienes favoritos guardados aún en esta categoría.</p>
-        )}
-      </div>
-    </div>
+            return (
+              <Col key={receta.id}>
+                <Card className="h-100 shadow rounded">
+                  <Card.Img
+                    variant="top"
+                    src={image}
+                    alt={title}
+                    style={{
+                      height: "200px",
+                      objectFit: "cover",
+                      borderTopLeftRadius: "15px",
+                      borderTopRightRadius: "15px",
+                    }}
+                    onError={(e) => {
+                      e.target.src = "/img/receta-default.jpg";
+                    }}
+                  />
+                  <Card.Body>
+                    <Card.Title>{title}</Card.Title>
+                    <Card.Text>
+                      {summary.replace(/<[^>]*>/g, "").substring(0, 100)}...
+                    </Card.Text>
+                  </Card.Body>
+                  <Card.Footer>
+                    <Button
+                      variant="info"
+                      as={Link}
+                      to={`/receta/${receta.id}`}
+                      rel="noopener noreferrer"
+                      className="w-100 text-white"
+                    >
+                      Ver Receta
+                    </Button>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+      )}
+    </Container>
   );
 };
-  
+
