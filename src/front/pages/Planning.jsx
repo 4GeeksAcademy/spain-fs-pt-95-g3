@@ -20,6 +20,7 @@ export const Planning = () => {
   const [error, setError] = useState(null);
   const [ingredientes, setIngredientes] = useState([]);
   const [todayMeals, setTodayMeals] = useState([]);
+  const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
 
   const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 
@@ -130,13 +131,17 @@ export const Planning = () => {
       alert('No estás autenticado');
       return;
     }
+  
+    // Obtiene la fecha actual en formato YYYY-MM-DD
+    const fechaHoy = new Date().toISOString().split("T")[0];
+  
     setSaving(true);
-
+  
     try {
       const tasks = [];
+  
       comidasDelDia.forEach(comida => {
         comidas[comida].forEach(receta => {
-          // Por cada receta, preparamos un POST
           tasks.push(
             fetch(`${baseUrl}/api/meals`, {
               method: 'POST',
@@ -147,31 +152,30 @@ export const Planning = () => {
               body: JSON.stringify({
                 name: comida,
                 description: receta.title,
+                calorías: receta.calories,
+                date: fechaHoy
               })
-            }).then(res => {
+            }).then(async res => {
               if (!res.ok) {
-                return res.json().then(err => {
-                  throw new Error(err.error || 'Error desconocido');
-                });
+                const err = await res.json();
+                throw new Error(err.error || 'Error desconocido');
               }
               return res.json();
             })
           );
         });
       });
-
+  
       await Promise.all(tasks);
-
-      // Si todo va bien:
+  
       alert('¡Planificación guardada en el servidor!');
     } catch (err) {
       console.error(err);
-
     } finally {
       setSaving(false);
     }
-  };
-
+  };  
+  
   return (
     <div className="container mt-4">
       <div className="row">
@@ -286,6 +290,7 @@ export const Planning = () => {
       {/* Planificación actual */}
       <div className="card">
         <div className="card-body">
+          
           <h5 className="card-title">Tu planificación</h5>
           <table className="table table-hover">
             <thead>
@@ -335,7 +340,7 @@ export const Planning = () => {
         
       </div>
       <div className="card mt-4 shadow-sm">
-  <div className="card-header bg-light">
+  <div className="card-header bg-warning">
     <h5 className="mb-0">Comidas de hoy</h5>
   </div>
   <div className="card-body">
@@ -363,7 +368,7 @@ export const Planning = () => {
       </div>
       </div>
       <div className="col-md-4">
-      <Calendar />
+      <Calendar onSelectDate={setFechaSeleccionada}/>
       </div>
       </div>
     </div>
