@@ -18,6 +18,7 @@ import { Recipes } from "./pages/Recipes";
 import { Planning } from "./pages/Planning";
 import { DetallReceta } from "./pages/DetallReceta";
 import { PrivateRoute } from "./pages/PrivateRoute";
+import { CreateRecipe } from "./pages/CreateRecipe";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -34,6 +35,7 @@ export const router = createBrowserRouter(
   <Route path="/register" element={<Register />} />
   <Route path="/recipes" element={<Recipes />} />
   <Route path="/receta/:id" element={<DetallReceta />} />
+  <Route path="/create-recipe" element={<CreateRecipe />} />
 
   
   <Route element={

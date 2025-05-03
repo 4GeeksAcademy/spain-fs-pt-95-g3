@@ -20,7 +20,6 @@ export const Planning = () => {
   const [error, setError] = useState(null);
   const [ingredientes, setIngredientes] = useState([]);
   const [todayMeals, setTodayMeals] = useState([]);
-  const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
 
   const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
 
@@ -132,8 +131,8 @@ export const Planning = () => {
       return;
     }
   
-    // Obtiene la fecha actual en formato YYYY-MM-DD
-    const fechaHoy = new Date().toISOString().split("T")[0];
+    // fecha actual en formato YYYY-MM-DD
+    const dateToday = new Date().toISOString().split("T")[0];
   
     setSaving(true);
   
@@ -153,7 +152,7 @@ export const Planning = () => {
                 name: comida,
                 description: receta.title,
                 calorías: receta.calories,
-                date: fechaHoy
+                date: dateToday
               })
             }).then(async res => {
               if (!res.ok) {
@@ -368,7 +367,7 @@ export const Planning = () => {
       </div>
       </div>
       <div className="col-md-4">
-      <Calendar onSelectDate={setFechaSeleccionada}/>
+      <Calendar />
       </div>
       </div>
     </div>

@@ -10,44 +10,53 @@ const Calendar = () => {
   const [modalDate, setModalDate] = useState(null);
   const [show, setShow] = useState(false);
   const [meals, setMeals] = useState([]);
-  const [loadingMeals, setLoadingMeals] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // 1. Al montar, traemos todas las comidas
+  useEffect(() => {
+    const fetchAllMeals = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("access_token");
+        const res = await fetch(`${baseUrl}/api/meals`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Error cargando las comidas");
+        const data = await res.json();
+        setMeals(data);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || "Error desconocido");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllMeals();
+  }, []);
+
+  // 2. Convertimos las comidas a eventos para el calendario
+  const events = meals.map((m) => ({
+    id: m.id,
+    title: m.name,
+    date: m.date, // YYYY-MM-DD
+  }));
+
   const handleDateClick = (info) => {
-    const dateStr = info.dateStr;
-    setModalDate(dateStr);
-    fetchMealsForDate(dateStr);
+    setModalDate(info.dateStr);
     setShow(true);
   };
 
   const handleClose = () => {
     setShow(false);
     setModalDate(null);
-    setMeals([]);
-    setError(null);
   };
 
-  const fetchMealsForDate = async (date) => {
-    setLoadingMeals(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(`${baseUrl}/api/meals`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error("Error cargando las comidas");
-      const data = await res.json();
-      // Filtramos por la fecha seleccionada:
-      const filtered = data.filter(m => m.date === date);
-      setMeals(filtered);
-    } catch (err) {
-      console.error(err);
-      setError(err.message || "Error desconocido");
-    } finally {
-      setLoadingMeals(false);
-    }
-  };
+  //filtrado de comidas para el modal
+  const mealsForDate = modalDate
+    ? meals.filter((m) => m.date === modalDate)
+    : [];
 
   return (
     <>
@@ -55,13 +64,22 @@ const Calendar = () => {
         <div className="card-header bg-info text-white">
           <h5 className="mb-0">Calendario de comidas</h5>
         </div>
-        <div className="card-body">
-          <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            dateClick={handleDateClick}
-            height="auto"
-          />
+        <div className="card-body mi-calendario">
+          {loading && (
+            <div className="text-center my-3">
+              <Spinner animation="border" />
+            </div>
+          )}
+          {error && <Alert variant="danger">{error}</Alert>}
+          {!loading && !error && (
+            <FullCalendar
+              plugins={[dayGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              dateClick={handleDateClick}
+              events={events}
+              height="auto"
+            />
+          )}
         </div>
       </div>
 
@@ -70,21 +88,11 @@ const Calendar = () => {
           <Modal.Title>Plan de comidas — {modalDate}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {loadingMeals && (
-            <div className="text-center my-3">
-              <Spinner animation="border" />
-            </div>
-          )}
-
-          {error && <Alert variant="danger">{error}</Alert>}
-
-          {!loadingMeals && !error && meals.length === 0 && (
+          {mealsForDate.length === 0 ? (
             <p>No hay comidas guardadas para este día.</p>
-          )}
-
-          {!loadingMeals && meals.length > 0 && (
+          ) : (
             <ListGroup>
-              {meals.map((m) => (
+              {mealsForDate.map((m) => (
                 <ListGroup.Item key={m.id}>
                   <strong>{m.name}</strong>: {m.description}
                 </ListGroup.Item>

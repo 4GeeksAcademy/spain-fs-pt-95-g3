@@ -113,3 +113,31 @@ class Favorite(db.Model):
             "title": self.title,
             "image": self.image
         }
+
+class Recipe(db.Model):
+    __tablename__ = 'recipe'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False, unique=True)
+    description = db.Column(db.Text, nullable=True)
+    servings = db.Column(db.Integer, nullable=True)
+    macros = db.Column(db.JSON, nullable=True)
+    ingredients = db.Column(db.JSON, nullable=True)
+    instructions = db.Column(db.JSON, nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='recipes')
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "servings": self.servings,
+            "macros": self.macros,
+            "ingredients": self.ingredients,
+            "instructions": self.instructions,
+            "created_by": self.created_by,
+            "created_at": self.created_at.isoformat()
+        }
