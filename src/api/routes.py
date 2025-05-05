@@ -4,13 +4,12 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta, datetime, date
-import os
-import openai 
+import os, json, traceback
+from openai import OpenAI, error as openai_error
 from dotenv import load_dotenv
-import json
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 api = Blueprint('api', __name__)
 CORS(api)
@@ -23,7 +22,7 @@ def handle_hello():
 def register():
     data = request.json
     required_fields = ['username', 'password', 'email', 'birthdate', 'objective', 'height', 'weight', 'sex']
-    
+
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Faltan campos obligatorios"}), 400
 
@@ -170,7 +169,7 @@ def profile():
         db.session.commit()
 
         return jsonify({"message": "Peso actualizado correctamente"}), 200
-    
+
 @api.route('/challenges', methods=['POST'])
 @jwt_required()
 def crear_reto():
@@ -204,7 +203,7 @@ def completar_reto(reto_id):
 @api.route('/challenges', methods=['GET'])
 @jwt_required()
 def obtener_retos():
-    
+
     user_id = get_jwt_identity()
     # Consulta los retos
     retos = ChallengeUser.query.filter_by(user_id=user_id).all()
@@ -237,7 +236,7 @@ def registrar_comida():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Hubo un problema al guardar la comida", "details": str(e)}), 500
-    
+
 @api.route('/meals', methods=['GET'])
 @jwt_required()
 def obtener_comidas():
@@ -298,38 +297,81 @@ def delete_favorite(favorite_id):
 @jwt_required()
 def generate_recipe():
     data = request.get_json()
+    print("Datos recibidos:", data)
     name = data.get('name')
     main_ingredients = data.get('mainIngredients')
-    if not name or not main_ingredients:
-        return jsonify({"error": "Faltan campos obligatorios: name y mainIngredients"}), 400
 
-    # Llamada a OpenAI para generar receta
-    prompt = f"""
-    Eres un asistente culinario. Recibe un nombre de receta y sus ingredientes principales.
-    Devuélveme un JSON con las llaves:
-    {{
-      "title": string,
-      "description": string,
-      "ingredients": [string],
-      "servings": number,
-      "macros": {{"calories": string, "protein": string, "fat": string, "carbs": string}},
-      "instructions": [string]
-    }}
-    Receta: "{name}"
-    Ingredientes: "{main_ingredients}"
-    """
+    # 1) Validación de entrada
+    if not name or not isinstance(main_ingredients, list) or not main_ingredients:
+        return jsonify({
+            "message": "Faltan campos obligatorios o mainIngredients no es un array válido"
+        }), 400
+
+    # 2) Comprobar API key
+    if not os.getenv("OPENAI_API_KEY"):
+        print("API KEY NO CARGADA")
+        return jsonify({"message": "Error interno de configuración"}), 500
+
+    # 3) Preparar mensajes
+    system_msg = {
+        "role": "system",
+        "content": "Eres un asistente culinario que devuelve recetas en JSON bien estructurado."
+    }
+    user_msg = {
+        "role": "user",
+        "content": f"""
+Devuélveme una receta en formato JSON con las llaves:
+{{
+  "title": string,
+  "description": string,
+  "ingredients": [string],
+  "servings": number,
+  "macros": {{
+    "calories": string,
+    "protein": string,
+    "fat": string,
+    "carbs": string
+  }},
+  "instructions": [string]
+}}
+
+Receta: "{name}"
+Ingredientes: {json.dumps(main_ingredients)}
+"""
+    }
+
     try:
-        completion = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[{"role": "system", "content": prompt}],
+        # 4) Llamada al API
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[system_msg, user_msg],
             temperature=0.7
         )
-        # la API devuelve un string que se convierte a objeto JSON
-        recipe_data = json.loads(completion.choices[0].message.content)
-    except Exception as e:
-        return jsonify({"error": "Error generando receta con OpenAI", "details": str(e)}), 500
+        content = completion.choices[0].message.content
+        print("Respuesta OpenAI:", content)
 
-    return jsonify({"recipe": recipe_data}), 200
+        # 5) Parseo del JSON
+        recipe_data = json.loads(content)
+        return jsonify({"recipe": recipe_data}), 200
+
+    except openai_error.RateLimitError as e:
+        # 6) Manejo de cuota agotada
+        print("Quota exceeded:", str(e))
+        return jsonify({
+            "message": "Has excedido tu cuota de OpenAI. Revisa tu plan y método de pago."
+        }), 429
+
+    except json.JSONDecodeError:
+        # 7) Respuesta no-JSON
+        return jsonify({
+            "message": "OpenAI devolvió una respuesta inválida (no JSON)",
+            "raw": content
+        }), 502
+
+    except Exception as e:
+        # 8) Cualquier otro error
+        print(traceback.format_exc())
+        return jsonify({"message": "Error generando receta con OpenAI"}), 500
 
 @api.route('/recipes', methods=['POST'])
 @jwt_required()

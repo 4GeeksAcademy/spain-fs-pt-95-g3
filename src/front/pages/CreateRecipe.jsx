@@ -19,17 +19,27 @@ export const CreateRecipe = () => {
     setLoadingGen(true);
     setGenError(null);
     setGenerated(null);
-
     try {
       const token = localStorage.getItem("access_token");
+      const ingredientsArray = mainIngredients
+        .split(",")
+        .map(ing => ing.trim())
+        .filter(ing => ing);
+  
+      console.log("Enviando:", { name, mainIngredients: ingredientsArray });
+  
       const res = await fetch(`${baseUrl}/api/recipes/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, mainIngredients }),
+        body: JSON.stringify({
+          name,
+          mainIngredients: ingredientsArray
+        }),
       });
+  
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.message || "Error generando receta");
       setGenerated(payload.recipe);
@@ -40,7 +50,7 @@ export const CreateRecipe = () => {
     }
   };
 
-  // Guardar receta generada en base de datos
+  // Guardar la receta en laase de datos
   const handleSave = async () => {
     setSaving(true);
     setSaveError(null);
@@ -57,8 +67,8 @@ export const CreateRecipe = () => {
         body: JSON.stringify(generated),
       });
       const payload = await res.json();
-      if (res.status === 409) throw new Error("Ya existe una receta con ese nombre");
-      if (!res.ok) throw new Error(payload.message || "Error guardando receta");
+        console.log("Payload de error:", payload);
+        if (!res.ok) throw new Error(payload.error || payload.message);
       setSaveSuccess(true);
     } catch (err) {
       setSaveError(err.message);
@@ -69,7 +79,14 @@ export const CreateRecipe = () => {
 
   return (
     <div className="container py-4">
-      <h2>Crear Nueva Receta</h2>
+      <h1 className="text-center mb-4"
+      style={{
+        color: "#2c3e50",
+        fontWeight: "700",
+        textShadow: "1px 1px 3px rgba(0,0,0,0.1)",
+        position: "relative",
+        paddingBottom: "10px"
+      }}>Crear Nueva Receta</h1>
 
       <Form onSubmit={handleGenerate}>
         <Form.Group className="mb-3">
@@ -77,7 +94,7 @@ export const CreateRecipe = () => {
           <Form.Control
             value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="Ej: Pollo al curry"
+            placeholder="Ej: Lasaña"
             required
           />
         </Form.Group>
@@ -89,14 +106,14 @@ export const CreateRecipe = () => {
             rows={3}
             value={mainIngredients}
             onChange={e => setMainIngredients(e.target.value)}
-            placeholder="Ej: Pollo, leche de coco, curry en polvo, cebolla..."
+            placeholder="Ej: Salsa boloñesa, salsa bechamel..."
             required
           />
         </Form.Group>
 
         {genError && <Alert variant="danger">{genError}</Alert>}
 
-        <Button type="submit" variant="primary" disabled={loadingGen}>
+        <Button type="submit" variant="info text-white" disabled={loadingGen}>
           {loadingGen ? <Spinner animation="border" size="sm" /> : "Generar Receta"}
         </Button>
       </Form>
@@ -131,7 +148,7 @@ export const CreateRecipe = () => {
             {saveSuccess && <Alert variant="success">Receta guardada correctamente 🎉</Alert>}
 
             <Button
-              variant="success"
+              variant="info"
               onClick={handleSave}
               disabled={saving || saveSuccess}
             >

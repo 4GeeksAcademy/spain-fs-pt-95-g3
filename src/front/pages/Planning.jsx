@@ -201,8 +201,7 @@ export const Planning = () => {
               onChange={handleIngredientesChange}
               onKeyUp={(e) => e.key === 'Enter' && agregarIngrediente()}
             />
-            <button 
-              className="btn btn-primary" 
+            <button className="btn btn-warning" 
               onClick={agregarIngrediente}
               disabled={!busqueda.trim()}
             >
@@ -231,7 +230,7 @@ export const Planning = () => {
         </div>
       </div>
 
-      {/* Feedback de carga y errores */}
+      {/* info carga y errores */}
       {loading && (
         <div className="text-center my-4">
           <div className="spinner-border text-primary" role="status">
