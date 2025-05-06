@@ -150,7 +150,7 @@ export const CreateRecipe = () => {
             </ListGroup>
 
             {saveError && <Alert variant="danger">{saveError}</Alert>}
-            {saveSuccess && <Alert variant="success">Receta guardada correctamente 🎉</Alert>}
+            {saveSuccess && <Alert variant="info">Receta guardada correctamente 🎉</Alert>}
 
             <Button
               variant="info"
