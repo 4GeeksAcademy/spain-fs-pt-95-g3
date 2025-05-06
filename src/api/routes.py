@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta, datetime, date
 import os, json, traceback
-from openai import OpenAI, error as openai_error
+from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -296,82 +296,65 @@ def delete_favorite(favorite_id):
 @api.route('/recipes/generate', methods=['POST'])
 @jwt_required()
 def generate_recipe():
+    print(">>> Entré en generate_recipe")      
     data = request.get_json()
-    print("Datos recibidos:", data)
+    print(">>> Datos recibidos:", data)
+
     name = data.get('name')
     main_ingredients = data.get('mainIngredients')
-
-    # 1) Validación de entrada
     if not name or not isinstance(main_ingredients, list) or not main_ingredients:
-        return jsonify({
-            "message": "Faltan campos obligatorios o mainIngredients no es un array válido"
-        }), 400
+        print("!!! Falta name o mainIngredients no es lista o está vacía")
+        return jsonify({"error": "Faltan campos obligatorios: name y mainIngredients"}), 400
 
-    # 2) Comprobar API key
-    if not os.getenv("OPENAI_API_KEY"):
-        print("API KEY NO CARGADA")
-        return jsonify({"message": "Error interno de configuración"}), 500
-
-    # 3) Preparar mensajes
+    # Preparo los mensajes
     system_msg = {
         "role": "system",
-        "content": "Eres un asistente culinario que devuelve recetas en JSON bien estructurado."
+        "content": "Eres un asistente culinario que devuelve recetas en JSON estructurado."
     }
     user_msg = {
         "role": "user",
         "content": f"""
 Devuélveme una receta en formato JSON con las llaves:
-{{
-  "title": string,
-  "description": string,
-  "ingredients": [string],
-  "servings": number,
-  "macros": {{
-    "calories": string,
-    "protein": string,
-    "fat": string,
-    "carbs": string
-  }},
-  "instructions": [string]
-}}
-
+{{ "title": string, "description": string, "ingredients": [string],
+  "servings": number, "macros": {{ "calories": string, "protein": string,
+  "fat": string, "carbs": string }}, "instructions": [string] }}
 Receta: "{name}"
 Ingredientes: {json.dumps(main_ingredients)}
 """
     }
 
+    # Empieza la llamada a OpenAI
     try:
-        # 4) Llamada al API
+        print(">>> Antes de llamar a OpenAI")
         completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo",  # o "gpt-4" si lo tienes
             messages=[system_msg, user_msg],
             temperature=0.7
         )
+        print(">>> OpenAI respondió, parseando contenido")
         content = completion.choices[0].message.content
-        print("Respuesta OpenAI:", content)
+        print(">>> Raw content:", content[:200], "…")  # Muestra hasta 200 chars
 
-        # 5) Parseo del JSON
         recipe_data = json.loads(content)
+        print(">>> JSON parseado correctamente:", recipe_data)
+
         return jsonify({"recipe": recipe_data}), 200
 
-    except openai_error.RateLimitError as e:
-        # 6) Manejo de cuota agotada
-        print("Quota exceeded:", str(e))
+    except json.JSONDecodeError as je:
+        print("!!! JSONDecodeError:", str(je))
+        print("Raw content fallida:", content)
         return jsonify({
-            "message": "Has excedido tu cuota de OpenAI. Revisa tu plan y método de pago."
-        }), 429
-
-    except json.JSONDecodeError:
-        # 7) Respuesta no-JSON
-        return jsonify({
-            "message": "OpenAI devolvió una respuesta inválida (no JSON)",
+            "error": "La respuesta de OpenAI no era un JSON válido",
             "raw": content
         }), 502
 
     except Exception as e:
-        # 8) Cualquier otro error
-        print(traceback.format_exc())
-        return jsonify({"message": "Error generando receta con OpenAI"}), 500
+        print("💥 Excepción al llamar a OpenAI:", str(e))
+        traceback.print_exc()
+        return jsonify({
+            "error": "Error generando receta con OpenAI",
+            "details": str(e)
+        }), 500
 
 @api.route('/recipes', methods=['POST'])
 @jwt_required()

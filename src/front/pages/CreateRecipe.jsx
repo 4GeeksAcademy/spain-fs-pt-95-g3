@@ -19,15 +19,18 @@ export const CreateRecipe = () => {
     setLoadingGen(true);
     setGenError(null);
     setGenerated(null);
+  
+    //  Convertir el string a array
+    const ingredientsArray = mainIngredients
+      .split(",")
+      .map(i => i.trim())
+      .filter(i => i);
+  
+    console.log("Enviando:", { name, mainIngredients: ingredientsArray });
+  
     try {
       const token = localStorage.getItem("access_token");
-      const ingredientsArray = mainIngredients
-        .split(",")
-        .map(ing => ing.trim())
-        .filter(ing => ing);
-  
-      console.log("Enviando:", { name, mainIngredients: ingredientsArray });
-  
+      //Llamada al endpoint
       const res = await fetch(`${baseUrl}/api/recipes/generate`, {
         method: "POST",
         headers: {
@@ -41,7 +44,9 @@ export const CreateRecipe = () => {
       });
   
       const payload = await res.json();
-      if (!res.ok) throw new Error(payload.message || "Error generando receta");
+      if (!res.ok) throw new Error(payload.error || payload.message);
+  
+      // Guardar la receta recibida
       setGenerated(payload.recipe);
     } catch (err) {
       setGenError(err.message);
@@ -49,7 +54,7 @@ export const CreateRecipe = () => {
       setLoadingGen(false);
     }
   };
-
+  
   // Guardar la receta en laase de datos
   const handleSave = async () => {
     setSaving(true);

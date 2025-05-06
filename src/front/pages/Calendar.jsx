@@ -13,7 +13,7 @@ const Calendar = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 1. Al montar, traemos todas las comidas
+  // Para traer todas las comidas
   useEffect(() => {
     const fetchAllMeals = async () => {
       setLoading(true);
@@ -36,7 +36,7 @@ const Calendar = () => {
     fetchAllMeals();
   }, []);
 
-  // 2. Convertimos las comidas a eventos para el calendario
+  // comidas llevadas como eventos para el calendario
   const events = meals.map((m) => ({
     id: m.id,
     title: m.name,
