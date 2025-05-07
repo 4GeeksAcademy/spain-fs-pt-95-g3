@@ -63,6 +63,9 @@ const NavbarProject = () => {
 						<Nav.Link as={Link} to="/planning" className="mx-2">
 						Mi Plan
 						</Nav.Link>
+						<Nav.Link as={Link} to="/create-recipe" className="mx-2">
+						Crear Receta
+						</Nav.Link>
 					</Nav>
 					{/*barra de busqueda*/}
 					<Form className="d-flex me-3" onSubmit={handleSearch}>

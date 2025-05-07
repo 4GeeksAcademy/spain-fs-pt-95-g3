@@ -130,13 +130,17 @@ export const Planning = () => {
       alert('No estás autenticado');
       return;
     }
+  
+    // fecha actual en formato YYYY-MM-DD
+    const dateToday = new Date().toISOString().split("T")[0];
+  
     setSaving(true);
-
+  
     try {
       const tasks = [];
+  
       comidasDelDia.forEach(comida => {
         comidas[comida].forEach(receta => {
-          // Por cada receta, preparamos un POST
           tasks.push(
             fetch(`${baseUrl}/api/meals`, {
               method: 'POST',
@@ -147,31 +151,30 @@ export const Planning = () => {
               body: JSON.stringify({
                 name: comida,
                 description: receta.title,
+                calorías: receta.calories,
+                date: dateToday
               })
-            }).then(res => {
+            }).then(async res => {
               if (!res.ok) {
-                return res.json().then(err => {
-                  throw new Error(err.error || 'Error desconocido');
-                });
+                const err = await res.json();
+                throw new Error(err.error || 'Error desconocido');
               }
               return res.json();
             })
           );
         });
       });
-
+  
       await Promise.all(tasks);
-
-      // Si todo va bien:
+  
       alert('¡Planificación guardada en el servidor!');
     } catch (err) {
       console.error(err);
-
     } finally {
       setSaving(false);
     }
-  };
-
+  };  
+  
   return (
     <div className="container mt-4">
       <div className="row">
@@ -198,8 +201,7 @@ export const Planning = () => {
               onChange={handleIngredientesChange}
               onKeyUp={(e) => e.key === 'Enter' && agregarIngrediente()}
             />
-            <button 
-              className="btn btn-primary" 
+            <button className="btn btn-warning" 
               onClick={agregarIngrediente}
               disabled={!busqueda.trim()}
             >
@@ -228,7 +230,7 @@ export const Planning = () => {
         </div>
       </div>
 
-      {/* Feedback de carga y errores */}
+      {/* info carga y errores */}
       {loading && (
         <div className="text-center my-4">
           <div className="spinner-border text-primary" role="status">
@@ -286,6 +288,7 @@ export const Planning = () => {
       {/* Planificación actual */}
       <div className="card">
         <div className="card-body">
+          
           <h5 className="card-title">Tu planificación</h5>
           <table className="table table-hover">
             <thead>
@@ -335,7 +338,7 @@ export const Planning = () => {
         
       </div>
       <div className="card mt-4 shadow-sm">
-  <div className="card-header bg-light">
+  <div className="card-header bg-warning">
     <h5 className="mb-0">Comidas de hoy</h5>
   </div>
   <div className="card-body">

@@ -1,9 +1,15 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, UserGoal, ChallengeUser, Meal, Favorite
+from api.models import db, User, UserGoal, ChallengeUser, Meal, Favorite, Recipe
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta, datetime, date
+import os, json, traceback
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 api = Blueprint('api', __name__)
 CORS(api)
@@ -16,7 +22,7 @@ def handle_hello():
 def register():
     data = request.json
     required_fields = ['username', 'password', 'email', 'birthdate', 'objective', 'height', 'weight', 'sex']
-    
+
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Faltan campos obligatorios"}), 400
 
@@ -163,7 +169,7 @@ def profile():
         db.session.commit()
 
         return jsonify({"message": "Peso actualizado correctamente"}), 200
-    
+
 @api.route('/challenges', methods=['POST'])
 @jwt_required()
 def crear_reto():
@@ -197,7 +203,7 @@ def completar_reto(reto_id):
 @api.route('/challenges', methods=['GET'])
 @jwt_required()
 def obtener_retos():
-    
+
     user_id = get_jwt_identity()
     # Consulta los retos
     retos = ChallengeUser.query.filter_by(user_id=user_id).all()
@@ -230,7 +236,7 @@ def registrar_comida():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Hubo un problema al guardar la comida", "details": str(e)}), 500
-    
+
 @api.route('/meals', methods=['GET'])
 @jwt_required()
 def obtener_comidas():
@@ -286,3 +292,91 @@ def delete_favorite(favorite_id):
     db.session.commit()
 
     return jsonify({"message": "Favorito eliminado correctamente"}), 200
+
+@api.route('/recipes/generate', methods=['POST'])
+@jwt_required()
+def generate_recipe():
+    print(">>> Entré en generate_recipe")
+    data = request.get_json()
+    print(">>> Datos recibidos:", data)
+
+    name = data.get('name')
+    main_ingredients = data.get('mainIngredients')
+    if not name or not isinstance(main_ingredients, list) or not main_ingredients:
+        print("!!! Falta name o mainIngredients no es lista o está vacía")
+        return jsonify({"error": "Faltan campos obligatorios: name y mainIngredients"}), 400
+
+    # MODO DEPURACIÓN: devolver receta MOCK
+    if os.getenv("RECIPE_MOCK", "false").lower() == "true":
+        mock_recipe = {
+            "title": "Lasaña de prueba",
+            "description": "Esta es una receta mock para desarrollo",
+            "ingredients": ["pasta", "salsa", "queso"],
+            "servings": 2,
+            "macros": {"calories": "400 kcal", "protein": "20 g", "fat": "15 g", "carbs": "45 g"},
+            "instructions": ["Paso 1", "Paso 2", "Paso 3"]
+        }
+        return jsonify({"recipe": mock_recipe}), 200
+
+    # --------------------------------------------------
+    # Código real comentado (descomentar para producción):
+    # system_msg = {
+    #     "role": "system",
+    #     "content": "Eres un asistente culinario que devuelve recetas en JSON estructurado."
+    # }
+    # user_msg = {
+    #     "role": "user",
+    #     "content": f"""
+    # Devuélveme una receta en formato JSON con las llaves:
+    # {{ "title": string, "description": string, "ingredients": [string],
+    #   "servings": number, "macros": {{ "calories": string, "protein": string,
+    #   "fat": string, "carbs": string }}, "instructions": [string] }}
+    # Receta: \"{name}\"
+    # Ingredientes: {json.dumps(main_ingredients)}
+    # """
+    # }
+    # try:
+    #     completion = client.chat.completions.create(
+    #         model="gpt-3.5-turbo",
+    #         messages=[system_msg, user_msg],
+    #         temperature=0.7,
+    #         max_tokens=300
+    #     )
+    #     content = completion.choices[0].message.content
+    #     recipe_data = json.loads(content)
+    #     return jsonify({"recipe": recipe_data}), 200
+    # except json.JSONDecodeError:
+    #     return jsonify({"error": "La respuesta de OpenAI no era un JSON válido", "raw": content}), 502
+    # except Exception as e:
+    #     traceback.print_exc()
+    #     return jsonify({"error": "Error generando receta con OpenAI", "details": str(e)}), 500
+    
+@api.route('/recipes', methods=['POST'])
+@jwt_required()
+def save_recipe():
+    recipe_json = request.get_json()
+    title = recipe_json.get('title')
+    if not title:
+        return jsonify({"error": "Falta el título de la receta"}), 400
+
+    # Verificar duplicados por title
+    existing = Recipe.query.filter_by(title=title).first()
+    if existing:
+        return jsonify({"error": "Ya existe una receta con ese nombre"}), 409
+
+    try:
+        new_recipe = Recipe(
+            title=recipe_json['title'],
+            description=recipe_json.get('description'),
+            servings=recipe_json.get('servings'),
+            macros=recipe_json.get('macros'),
+            ingredients=recipe_json.get('ingredients'),
+            instructions=recipe_json.get('instructions'),
+            created_by=get_jwt_identity()
+        )
+        db.session.add(new_recipe)
+        db.session.commit()
+        return jsonify(new_recipe.serialize()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error guardando la receta", "details": str(e)}), 500

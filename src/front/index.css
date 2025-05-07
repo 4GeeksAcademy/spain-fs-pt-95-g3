@@ -79,11 +79,19 @@ body {
   transform: scale(1.05);
 }
 
-
 /* Mi Plan */
 .card {
   transition: transform 0.3s ease;
 }
 .card:hover {
   transform: translateY(-5px);
+}
+
+.mi-calendario {
+  --fc-border-color: #c4c4c4;
+}
+
+:root {
+  /* Fondo del día “hoy” */
+  --fc-today-bg-color: #a8dadc;
 }
